@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_monitor_service_label">Auto AOD 通知监视服务</string>
+    <string name="dialog_common_pos">确定</string>
+    <string name="dialog_common_neg">取消</string>
+    <string name="dialog_open_notification_permission_msg">请允许本程序读取系统通知</string>
+
+    <string name="main_switch_title">核心服务</string>
+    <string name="main_switch_summary_running">核心服务正在运行</string>
+    <string name="main_switch_summary_error">核心服务启动失败</string>
+    <string name="extra_settings_category_title">额外设置</string>
+    <string name="extra_settings_airmode_title">飞行模式开启时禁用服务</string>
+    <string name="extra_settings_airmode_summary">开启此功能将会节约电量，比如睡觉时开启飞行模式，则AOD也已经不那么重要了，因为你睡着了，看不到它</string>
+    <string name="extra_settings_apps_title">应用管理</string>
+    <string name="extra_settings_apps_summary">只有你选择的应用才有效</string>
+
+    <string name="app_select_label">选择应用程序</string>
+
+</resources>

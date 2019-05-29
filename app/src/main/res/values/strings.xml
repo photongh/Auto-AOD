@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name" translatable="false">Auto AOD</string>
+    <string name="notification_monitor_service_label">Auto AOD notification monitor service</string>
+    <string name="dialog_common_pos">Ok</string>
+    <string name="dialog_common_neg">Cancel</string>
+    <string name="dialog_open_notification_permission_msg">We need to listen to system notification service to do
+        all things. Please enable it in the System Notification Service Permission setting panel.</string>
+
+    <string name="main_switch_title">Main service</string>
+    <string name="main_switch_summary_running">Main service is running</string>
+    <string name="main_switch_summary_error">Main service is not running</string>
+    <string name="extra_settings_category_title">Extra settings</string>
+    <string name="extra_settings_airmode_title">Disable service while airplane mode on</string>
+    <string name="extra_settings_airmode_summary">Enable it can save your battery. Usually you go to sleep with your phone\'s airplane mode turned on and
+        the AOD is not necessary at that moment</string>
+    <string name="extra_settings_apps_title">Application management</string>
+    <string name="extra_settings_apps_summary">Only the selected apps can be effected</string>
+
+    <string name="app_select_label">Select application</string>
+
+
+</resources>

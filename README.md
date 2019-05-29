@@ -1,6 +1,7 @@
 # Auto-AOD
 
-![screenshot1](./screenshot/device-2019-05-29-162958.png) ![screenshot1](./screenshot/device-2019-05-29-163043.png) 
+<img alt="screenshot1" src="./screenshot/device-2019-05-29-162958.png" width="30%">
+<img alt="screenshot2" src="./screenshot/device-2019-05-29-163043.png" width="30%">
 
 Auto AOD is developed for Samsung s10/s10+/s10e. Other phone may be OK too.
 
@@ -15,9 +16,23 @@ This app is desired to save more battery, so it has any permissions/traces and u
 (For Chinese)To ensure this app can be running forever, Please enable the "Auto Running" of this app
  in system settings.
 
-This is the source for the Auto-AOD
+This is the source for the Auto-AOD, APK Download: [go](https://github.com/photongh/Auto-AOD/releases)
 
-Download: [go](./LICENSE)
-
-[LICENSE](./LICENSE)
-
+License
+---
+```
+    Copyright (C) 2019-2020 "TangJian"
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+```

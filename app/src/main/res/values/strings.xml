@@ -17,6 +17,7 @@
     <string name="extra_settings_apps_summary">Only the selected apps can be effected</string>
 
     <string name="app_select_label">Select application</string>
-
+    <string name="app_select_menu_select_all">Select all</string>
+    <string name="app_select_menu_search">Search</string>
 
 </resources>

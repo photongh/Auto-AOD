@@ -15,5 +15,7 @@
     <string name="extra_settings_apps_summary">只有你选择的应用才有效</string>
 
     <string name="app_select_label">选择应用程序</string>
+    <string name="app_select_menu_select_all">全选</string>
+    <string name="app_select_menu_search">搜索</string>
 
 </resources>

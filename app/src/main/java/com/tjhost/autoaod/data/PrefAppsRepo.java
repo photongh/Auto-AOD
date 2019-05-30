@@ -73,6 +73,18 @@ public class PrefAppsRepo extends AppsRepo {
     @Override
     public void saveApps(List<UserApps> apps) {
         mSettings.putAppsList(PrefSettings.KEY_APPS_LIST, apps);
+
+//        if (apps == null) return;
+//        List<UserApps> allApps = getApplications().getValue();
+//        if (allApps == null) return;
+//        for (int i=0; i<apps.size(); i++) {
+//            int index = allApps.indexOf(apps.get(i));
+//            if (index != -1) {
+//                if (allApps.get(index).checked) continue;
+//                allApps.get(index).checked = true;
+//                setMutableLiveDataValue(getApplications(), allApps);
+//            }
+//        }
     }
 
     @Override

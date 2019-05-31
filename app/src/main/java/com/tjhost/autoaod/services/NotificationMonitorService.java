@@ -53,7 +53,7 @@ import java.util.List;
 public class NotificationMonitorService extends NotificationListenerService {
     private static boolean DEBUG = Constants.DEBUG;
     public static NotificationMonitorService INSTANCE;
-    private int originalAodMode;
+    private int originalAodMode, originalAodTapMode, originalAodStartTime, originalAodEndTime;
     private LiveData<Boolean> serviceEnableLd;
     private List<String> mPackages;
     private boolean isAirmodeNeed; // ui setting switch value
@@ -103,13 +103,13 @@ public class NotificationMonitorService extends NotificationListenerService {
             return;
         if (SettingUtil.isScreenOnAndUnlocked(this))
             return;
-        if (SettingUtil.getAodMode(this) == SettingUtil.MODE_AOD_ALWAYS_ON)
+        if (SettingUtil.getAodTapMode(this) == SettingUtil.MODE_AOD_ALWAYS_ON)
             return;
         if (sbn.isOngoing())
             return;
         if (!mPackages.contains(sbn.getPackageName()))
             return;
-        boolean r = SettingUtil.changeAodMode(this, SettingUtil.MODE_AOD_ALWAYS_ON);
+        boolean r = SettingUtil.changeAodMode(this, SettingUtil.MODE_AOD_ALWAYS_ON, 0, 0, 0);
         if (DEBUG) Log.d("NotificationService", "change aod mode to always on success ? " + r);
     }
 
@@ -177,6 +177,9 @@ public class NotificationMonitorService extends NotificationListenerService {
         if (MainFragment.mainViewModel != null)
             MainFragment.mainViewModel.setServiceRunningState(true);
         originalAodMode = SettingUtil.getAodMode(this);
+        originalAodTapMode = SettingUtil.getAodTapMode(this);
+        originalAodStartTime = SettingUtil.getAodStartTime(this);
+        originalAodEndTime = SettingUtil.getAodEndTime(this);
         //enableForgroundService(this);
     }
 
@@ -190,8 +193,9 @@ public class NotificationMonitorService extends NotificationListenerService {
 
     private void restoreAodMode() {
         if (DEBUG) Log.d("NotificationService", "originalAodMode = " + originalAodMode);
-        if (originalAodMode != SettingUtil.getAodMode(this)) {
-            boolean r = SettingUtil.changeAodMode(this, originalAodMode);
+        if (originalAodTapMode != SettingUtil.getAodTapMode(this)) {
+            boolean r = SettingUtil.changeAodMode(this, originalAodTapMode,
+                    originalAodMode, originalAodStartTime, originalAodEndTime);
             if (DEBUG) Log.d("NotificationService", "change aod mode to original success ? " + r);
         }
     }

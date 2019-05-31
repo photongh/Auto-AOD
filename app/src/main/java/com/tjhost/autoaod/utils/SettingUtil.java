@@ -25,34 +25,74 @@ public class SettingUtil {
 
     public static final int MODE_AOD_ALWAYS_ON = 0;
     public static final int MODE_AOD_TAP_ON = 1;
+    public static final int MODE_AOD_SCHEDULE = 2;
 
     private static Handler handler = new Handler(Looper.getMainLooper());
-    public static boolean changeAodMode(Context context, int mode) {
+    public static boolean changeAodMode(Context context, int mode, int aodSwitch, int startTime, int endTime) {
         boolean r = false;
         switch (mode) {
             case MODE_AOD_ALWAYS_ON:
+                // ignore aodSwitch, startTime, endTime
                 r = Settings.System.putInt(context.getContentResolver(),
                         "aod_tap_to_show_mode", 0);
+                r = Settings.System.putInt(context.getContentResolver(),
+                        "aod_mode_start_time", 0);
+                r = Settings.System.putInt(context.getContentResolver(),
+                        "aod_mode_end_time", 0);
                 Settings.System.putInt(context.getContentResolver(),
                         "aod_mode", 0);
                 handler.postDelayed(() -> Settings.System.putInt(context.getContentResolver(),
                         "aod_mode", 1), 100);
-                break;
+                return r;
             case MODE_AOD_TAP_ON:
+                // ignore startTime, endTime
                 r = Settings.System.putInt(context.getContentResolver(), "aod_tap_to_show_mode", 1);
+                r = Settings.System.putInt(context.getContentResolver(),
+                        "aod_mode_start_time", 0);
+                r = Settings.System.putInt(context.getContentResolver(),
+                        "aod_mode_end_time", 0);
+                break;
+            case MODE_AOD_SCHEDULE:
+                r = Settings.System.putInt(context.getContentResolver(), "aod_tap_to_show_mode", 0);
+                r = Settings.System.putInt(context.getContentResolver(),
+                        "aod_mode_start_time", startTime);
+                r = Settings.System.putInt(context.getContentResolver(),
+                        "aod_mode_end_time", endTime);
                 break;
             default:break;
         }
+
+        r = Settings.System.putInt(context.getContentResolver(),
+                "aod_mode", aodSwitch);
 
         return r;
     }
 
     public static int getAodMode(Context context) {
+        return Settings.System.getInt(context.getContentResolver(),
+                "aod_mode", 0);
+    }
+
+    public static int getAodStartTime(Context context) {
+        return Settings.System.getInt(context.getContentResolver(),
+                "aod_mode_start_time", 0);
+    }
+
+    public static int getAodEndTime(Context context) {
+        return Settings.System.getInt(context.getContentResolver(),
+                "aod_mode_end_time", 0);
+    }
+
+    public static int getAodTapMode(Context context) {
         int mode = Settings.System.getInt(context.getContentResolver(),
                 "aod_tap_to_show_mode", 1);
+        int startTime = getAodStartTime(context);
+        int endTime = getAodEndTime(context);
         switch (mode) {
             case 0:
-                return MODE_AOD_ALWAYS_ON;
+                if (startTime == 0 && endTime == 0)
+                    return MODE_AOD_ALWAYS_ON;
+                return MODE_AOD_SCHEDULE;
             case 1:
             default:
                 return MODE_AOD_TAP_ON;
@@ -78,6 +118,10 @@ public class SettingUtil {
 
     public static boolean isScreenOnAndUnlocked(Context context) {
         return isScreenOn(context) && !isScreenLocked(context);
+    }
+
+    public static boolean isScreenOnAndLocked(Context context) {
+        return isScreenOn(context) && isScreenLocked(context);
     }
 
     public static boolean isNotificationPermissionGranted(Context context) {

@@ -111,7 +111,7 @@ public class MainFragment extends PreferenceFragmentCompat {
             pref.setEnabled(false);
             return;
         }
-        if (SettingUtil.getAodMode(requireActivity()) == SettingUtil.MODE_AOD_ALWAYS_ON) {
+        if (SettingUtil.getAodTapMode(requireActivity()) == SettingUtil.MODE_AOD_ALWAYS_ON) {
             pref.setEnabled(false);
             return;
         }

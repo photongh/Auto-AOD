@@ -109,10 +109,12 @@ public class MainFragment extends PreferenceFragmentCompat {
 
         if (!SettingUtil.isWritable(requireActivity())) {
             pref.setEnabled(false);
+            TipsDialog.show(requireActivity(), 0, R.string.tips_no_write_settings_permission);
             return;
         }
         if (SettingUtil.getAodTapMode(requireActivity()) == SettingUtil.MODE_AOD_ALWAYS_ON) {
             pref.setEnabled(false);
+            TipsDialog.show(requireActivity(), 0, R.string.tips_already_aod);
             return;
         }
         if ((!SettingUtil.isNotificationPermissionGranted(requireActivity()))

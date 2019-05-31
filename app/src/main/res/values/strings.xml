@@ -5,6 +5,11 @@
     <string name="dialog_common_neg">Cancel</string>
     <string name="dialog_open_notification_permission_msg">We need to listen to system notification service to do
         all things. Please enable it in the System Notification Service Permission setting panel.</string>
+    <string name="tips_no_write_settings_permission">Sorry, it seems that the system settings isn\'t writable, please grant
+        me the system settings writing permission.</string>
+    <string name="tips_already_aod">You have already set AOD mode to always on, and the work of this app
+        is to notify you using AOD. this app is useless for you. So if you want to continue,
+        please change AOD mode to other mode(such as tap to show or schedule to show).</string>
 
     <string name="main_switch_title">Main service</string>
     <string name="main_switch_summary_running">Main service is running</string>

@@ -4,6 +4,9 @@
     <string name="dialog_common_pos">确定</string>
     <string name="dialog_common_neg">取消</string>
     <string name="dialog_open_notification_permission_msg">请允许本程序读取系统通知</string>
+    <string name="tips_no_write_settings_permission">检测到无法修改系统设置，请授予本软件修改系统设置权限</string>
+    <string name="tips_already_aod">检测到熄屏提醒（AOD）已经设置为常亮，而本软件就是利用熄屏提醒来当作通知灯使用，
+        所以本软件对你已经没什么作用。如果仍然需要使用本软件，请将熄屏提醒模式修改为点击来显示或在计划时间内显示</string>
 
     <string name="main_switch_title">核心服务</string>
     <string name="main_switch_summary_running">核心服务正在运行</string>

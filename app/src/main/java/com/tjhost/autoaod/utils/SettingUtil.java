@@ -145,4 +145,12 @@ public class SettingUtil {
             //e.printStackTrace();
         }
     }
+
+    public static void lightScreenOn(Context context) {
+        PowerManager pm=(PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP |  PowerManager.SCREEN_DIM_WAKE_LOCK,
+                context.getPackageName()+":light_screen");
+        wl.acquire(500L);
+        wl.release();
+    }
 }

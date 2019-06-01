@@ -33,6 +33,11 @@ public class PrefSettingRepo extends SettingRepo{
                 setMutableLiveDataValue(getScheduleEndTime(),
                         mSettings.getInt(PrefSettings.KEY_TIME_SCHEDULE_END,
                                 DEFAULT_SETTING_SCHEDULE_END_TIME));
+            case PrefSettings.KEY_LIGHT_SCREEN_ON:
+                setMutableLiveDataValue(getEnableLightScreenState(),
+                        mSettings.getBoolean(PrefSettings.KEY_LIGHT_SCREEN_ON,
+                                DEFAULT_SETTING_LIGHT_SCREEN_ENABLE));
+                break;
             default:break;
         }
     };
@@ -74,6 +79,11 @@ public class PrefSettingRepo extends SettingRepo{
     }
 
     @Override
+    public void saveEnableLightScreenState(boolean enable) {
+        mSettings.putBoolean(PrefSettings.KEY_LIGHT_SCREEN_ON, enable);
+    }
+
+    @Override
     public MediatorLiveData<Boolean> loadEnableServiceState() {
         setMutableLiveDataValue(getEnableServiceState(),
                 mSettings.getBoolean(PrefSettings.KEY_SERVICE_ENABLE, DEFAULT_SETTING_SERVICE_ENABLE));
@@ -106,6 +116,13 @@ public class PrefSettingRepo extends SettingRepo{
         setMutableLiveDataValue(getScheduleEndTime(),
                 mSettings.getInt(PrefSettings.KEY_TIME_SCHEDULE_END, DEFAULT_SETTING_SCHEDULE_END_TIME));
         return getScheduleEndTime();
+    }
+
+    @Override
+    public MediatorLiveData<Boolean> loadEnableLightScreenState() {
+        setMutableLiveDataValue(getEnableLightScreenState(),
+                mSettings.getBoolean(PrefSettings.KEY_LIGHT_SCREEN_ON, DEFAULT_SETTING_LIGHT_SCREEN_ENABLE));
+        return getEnableLightScreenState();
     }
 
     @Override

@@ -13,6 +13,7 @@ public abstract class SettingRepo extends Repo{
     public static final boolean DEFAULT_SETTING_SCHEDULE_MODE_ENABLE = Constants.DEFAULT_SETTING_TIME_SCHEDULE_ENABLE;
     public static final int DEFAULT_SETTING_SCHEDULE_START_TIME = Constants.DEFAULT_SETTING_TIME_SCHEDULE_START;
     public static final int DEFAULT_SETTING_SCHEDULE_END_TIME = Constants.DEFAULT_SETTING_TIME_SCHEDULE_END;
+    public static final boolean DEFAULT_SETTING_LIGHT_SCREEN_ENABLE = Constants.DEFAULT_SETTING_LIGHT_SCREEN_ON;
 
     private MediatorLiveData<Boolean> enableServiceState = new MediatorLiveData<>();
     private MediatorLiveData<Boolean> enableAirModeState = new MediatorLiveData<>();
@@ -20,6 +21,7 @@ public abstract class SettingRepo extends Repo{
     private MediatorLiveData<Boolean> ensbleScheduleModeState = new MediatorLiveData<>();
     private MediatorLiveData<Integer> scheduleStartTime = new MediatorLiveData<>();
     private MediatorLiveData<Integer> scheduleEndTime = new MediatorLiveData<>();
+    private MediatorLiveData<Boolean> enableLightScreenState = new MediatorLiveData<>();
 
     public SettingRepo(Context applicationContext) {
         super(applicationContext);
@@ -31,12 +33,14 @@ public abstract class SettingRepo extends Repo{
     public abstract void setServiceRunningState(boolean enable);
     public abstract void saveScheduleStartTime(int time);
     public abstract void saveScheduleEndTime(int time);
+    public abstract void saveEnableLightScreenState(boolean enable);
 
     public abstract MediatorLiveData<Boolean> loadEnableServiceState();
     public abstract MediatorLiveData<Boolean> loadEnableAirmodeState();
     public abstract MediatorLiveData<Boolean> loadEnableScheduleModeState();
     public abstract MediatorLiveData<Integer> loadScheduleStartTime();
     public abstract MediatorLiveData<Integer> loadScheduleEndTime();
+    public abstract MediatorLiveData<Boolean> loadEnableLightScreenState();
 
     public MediatorLiveData<Boolean> loadServiceRunningState() {
         setServiceRunningState(NotificationMonitorService.INSTANCE != null);
@@ -60,6 +64,9 @@ public abstract class SettingRepo extends Repo{
     }
     public MediatorLiveData<Integer> getScheduleEndTime() {
         return scheduleEndTime;
+    }
+    public MediatorLiveData<Boolean> getEnableLightScreenState() {
+        return enableLightScreenState;
     }
 
 }

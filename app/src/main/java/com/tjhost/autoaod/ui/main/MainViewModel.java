@@ -24,7 +24,7 @@ public class MainViewModel extends AndroidViewModel {
     private MediatorLiveData<Boolean> enableScheduleModeState = new MediatorLiveData<>();
     private MediatorLiveData<Integer> scheduleStartTime = new MediatorLiveData<>();
     private MediatorLiveData<Integer> scheduleEndTime = new MediatorLiveData<>();
-
+    private MediatorLiveData<Boolean> enableLightScreenState = new MediatorLiveData<>();
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -51,6 +51,8 @@ public class MainViewModel extends AndroidViewModel {
                 scheduleStartTime::setValue);
         scheduleEndTime.addSource(mRepo.getScheduleEndTime(),
                 scheduleEndTime::setValue);
+        enableLightScreenState.addSource(mRepo.getEnableLightScreenState(),
+                enableLightScreenState::setValue);
     }
 
     public void setEnableServiceState(boolean enable) {
@@ -105,6 +107,14 @@ public class MainViewModel extends AndroidViewModel {
         return scheduleEndTime;
     }
 
+    public void setEnableLightScreenState(boolean enable) {
+        mRepo.saveEnableLightScreenState(enable);
+    }
+
+    public LiveData<Boolean> getEnableLightScreenStateLd() {
+        return enableLightScreenState;
+    }
+
     public void refreshServiceAirmodeConfig() {
         if (NotificationMonitorService.INSTANCE == null)
             return;
@@ -121,6 +131,12 @@ public class MainViewModel extends AndroidViewModel {
         if (NotificationMonitorService.INSTANCE == null)
             return;
         NotificationMonitorService.INSTANCE.refreshScheduleTimeConfig();
+    }
+
+    public void refreshLightScreenConfig() {
+        if (NotificationMonitorService.INSTANCE == null)
+            return;
+        NotificationMonitorService.INSTANCE.refreshLightScreenConfig();
     }
 
     public static void startAODService(Context context) {

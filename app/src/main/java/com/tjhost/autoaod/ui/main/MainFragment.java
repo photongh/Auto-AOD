@@ -26,6 +26,7 @@ import com.tjhost.autoaod.ui.apps.AppsSelectActivity;
 import com.tjhost.autoaod.utils.SettingUtil;
 
 import static com.tjhost.autoaod.data.PrefSettings.KEY_AIRMODE_ENABLE;
+import static com.tjhost.autoaod.data.PrefSettings.KEY_LIGHT_SCREEN_ON;
 import static com.tjhost.autoaod.data.PrefSettings.KEY_SERVICE_ENABLE;
 import static com.tjhost.autoaod.data.PrefSettings.KEY_TIME_SCHEDULE_ENABLE;
 import static com.tjhost.autoaod.data.PrefSettings.KEY_TIME_SCHEDULE_END;
@@ -43,6 +44,7 @@ public class MainFragment extends PreferenceFragmentCompat {
         getPreferenceScreen().findPreference("extra").setDependency(KEY_SERVICE_ENABLE);
         getPreferenceScreen().findPreference(KEY_TIME_SCHEDULE_START).setDependency(KEY_TIME_SCHEDULE_ENABLE);
         getPreferenceScreen().findPreference(KEY_TIME_SCHEDULE_END).setDependency(KEY_TIME_SCHEDULE_ENABLE);
+        getPreferenceScreen().findPreference("tool").setDependency(KEY_SERVICE_ENABLE);
 
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
@@ -91,6 +93,10 @@ public class MainFragment extends PreferenceFragmentCompat {
         mainViewModel.getScheduleEndTimeLd().observe(this, newValue -> {
             if (DEBUG) Log.d("MainFragment", "getScheduleEndTimeLd change, newValue = " + newValue);
             mainViewModel.refreshScheduleTimeConfig();
+        });
+        mainViewModel.getEnableLightScreenStateLd().observe(this, aBoolean -> {
+            if (DEBUG) Log.d("MainFragment", "getEnableLightScreenStateLd change, aBoolean = " + aBoolean);
+            mainViewModel.refreshLightScreenConfig();
         });
         mainViewModel.getServiceRunningStateLd().observe(this, aBoolean -> {
             if (DEBUG) Log.d("MainFragment", "getServiceRunningStateLd change, aBoolean = " + aBoolean);
@@ -200,6 +206,10 @@ public class MainFragment extends PreferenceFragmentCompat {
                     startActivity(new Intent(requireActivity(), AppsSelectActivity.class));
                     return true;
         });
+
+        PreferenceCategory tools = createCategory(root, R.string.tool_settings_category_title, 0, "tool");
+        createSwitchPref(tools, R.string.tool_settings_light_screen_title, R.string.tool_settings_light_screen_summary,
+                KEY_LIGHT_SCREEN_ON, Constants.DEFAULT_SETTING_LIGHT_SCREEN_ON, true);
 
         return root;
     }

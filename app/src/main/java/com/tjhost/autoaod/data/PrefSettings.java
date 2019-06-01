@@ -20,6 +20,7 @@ public class PrefSettings {
     public static final String KEY_TIME_SCHEDULE_ENABLE = "enable_schedule";
     public static final String KEY_TIME_SCHEDULE_START = "schedule_start";
     public static final String KEY_TIME_SCHEDULE_END = "schedule_end";
+    public static final String KEY_LIGHT_SCREEN_ON = "light_screen_on";
 
     public static final String CONFIG_APPS_NAME = "apps_config";
     public static final String KEY_APPS_LIST = "app_list";

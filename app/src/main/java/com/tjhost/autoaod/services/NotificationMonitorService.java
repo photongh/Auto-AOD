@@ -45,7 +45,6 @@ import com.tjhost.autoaod.utils.SettingUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -63,7 +62,7 @@ public class NotificationMonitorService extends NotificationListenerService {
     private boolean scheduleEnabled; // schedule mode
     private int scheduleStartTime; // schedule start time
     private int scheduleEndTime; // schedule end time
-
+    private boolean isLightScreenNeed; // light screen on
 
     @Override
     public void onCreate() {
@@ -117,6 +116,9 @@ public class NotificationMonitorService extends NotificationListenerService {
             return;
         if (!mPackages.contains(sbn.getPackageName()))
             return;
+        if (isLightScreenNeed)
+            SettingUtil.lightScreenOn(this);
+
         boolean r = SettingUtil.changeAodMode(this, SettingUtil.MODE_AOD_ALWAYS_ON, 0, 0, 0);
         if (DEBUG) Log.d("NotificationService", "change aod mode to always on success ? " + r);
     }
@@ -221,6 +223,21 @@ public class NotificationMonitorService extends NotificationListenerService {
         });
     }
 
+    public void refreshLightScreenConfig() {
+        SettingRepo repo = DataFactory.getSettingRepo(this.getApplication());
+        // lambda is invalid here because we need the inner class pointer "this"
+        repo.getEnableLightScreenState().observeForever(new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (DEBUG) Log.d("NotificationService", "getEnableLightScreenState");
+                isLightScreenNeed = aBoolean;
+                if (DEBUG) Log.d("NotificationService", "now isLightScreenNeed = " + isLightScreenNeed);
+                repo.getEnableLightScreenState().removeObserver(this);
+            }
+        });
+        repo.loadEnableLightScreenState();
+    }
+
     private void init() {
         if (MainFragment.mainViewModel != null)
             MainFragment.mainViewModel.setServiceRunningState(true);
@@ -306,6 +323,7 @@ public class NotificationMonitorService extends NotificationListenerService {
             refreshAppsConfig();
             refreshScheduleModeConfig();
             refreshScheduleTimeConfig();
+            refreshLightScreenConfig();
             registReceiver();
             return;
         }

@@ -21,6 +21,10 @@
     <string name="extra_settings_apps_title">应用管理</string>
     <string name="extra_settings_apps_summary">只有你选择的应用才有效</string>
 
+    <string name="tool_settings_category_title">工具</string>
+    <string name="tool_settings_light_screen_title">通知亮屏</string>
+    <string name="tool_settings_light_screen_summary">当所选择的应用有新的通知时，点亮屏幕</string>
+
     <string name="app_select_label">选择应用程序</string>
     <string name="app_select_menu_select_all">全选</string>
     <string name="app_select_menu_search">搜索</string>

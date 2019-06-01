@@ -27,6 +27,10 @@
     <string name="extra_settings_apps_title">Application management</string>
     <string name="extra_settings_apps_summary">Only the selected apps can be effected</string>
 
+    <string name="tool_settings_category_title">Tools</string>
+    <string name="tool_settings_light_screen_title">Turn screen on</string>
+    <string name="tool_settings_light_screen_summary">When a notification comes, Light up the screen for seconds</string>
+
     <string name="app_select_label">Select application</string>
     <string name="app_select_menu_select_all">Select all</string>
     <string name="app_select_menu_search">Search</string>

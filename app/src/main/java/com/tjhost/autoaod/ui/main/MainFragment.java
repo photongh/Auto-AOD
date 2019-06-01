@@ -27,6 +27,9 @@ import com.tjhost.autoaod.utils.SettingUtil;
 
 import static com.tjhost.autoaod.data.PrefSettings.KEY_AIRMODE_ENABLE;
 import static com.tjhost.autoaod.data.PrefSettings.KEY_SERVICE_ENABLE;
+import static com.tjhost.autoaod.data.PrefSettings.KEY_TIME_SCHEDULE_ENABLE;
+import static com.tjhost.autoaod.data.PrefSettings.KEY_TIME_SCHEDULE_END;
+import static com.tjhost.autoaod.data.PrefSettings.KEY_TIME_SCHEDULE_START;
 
 public class MainFragment extends PreferenceFragmentCompat {
         //implements SharedPreferences.OnSharedPreferenceChangeListener{
@@ -38,6 +41,8 @@ public class MainFragment extends PreferenceFragmentCompat {
         super.onCreate(savedInstanceState);
         setPreferenceScreen(createPreferenceHierarchy());
         getPreferenceScreen().findPreference("extra").setDependency(KEY_SERVICE_ENABLE);
+        getPreferenceScreen().findPreference(KEY_TIME_SCHEDULE_START).setDependency(KEY_TIME_SCHEDULE_ENABLE);
+        getPreferenceScreen().findPreference(KEY_TIME_SCHEDULE_END).setDependency(KEY_TIME_SCHEDULE_ENABLE);
 
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
@@ -75,6 +80,18 @@ public class MainFragment extends PreferenceFragmentCompat {
             if (DEBUG) Log.d("MainFragment", "getEnableAirmodeStateLd change, aBoolean = " + aBoolean);
             mainViewModel.refreshServiceAirmodeConfig();
         });
+        mainViewModel.getEnableScheduleModeStateLd().observe(this, aBoolean -> {
+            if (DEBUG) Log.d("MainFragment", "getEnableScheduleModeStateLd change, aBoolean = " + aBoolean);
+            mainViewModel.refreshScheduleModeConfig();
+        });
+        mainViewModel.getScheduleStartTimeLd().observe(this, newValue -> {
+            if (DEBUG) Log.d("MainFragment", "getScheduleStartTimeLd change, newValue = " + newValue);
+            mainViewModel.refreshScheduleTimeConfig();
+        });
+        mainViewModel.getScheduleEndTimeLd().observe(this, newValue -> {
+            if (DEBUG) Log.d("MainFragment", "getScheduleEndTimeLd change, newValue = " + newValue);
+            mainViewModel.refreshScheduleTimeConfig();
+        });
         mainViewModel.getServiceRunningStateLd().observe(this, aBoolean -> {
             if (DEBUG) Log.d("MainFragment", "getServiceRunningStateLd change, aBoolean = " + aBoolean);
             if (aBoolean) {
@@ -101,6 +118,17 @@ public class MainFragment extends PreferenceFragmentCompat {
             }
         });
         mainViewModel.loadServiceRunningState();
+    }
+
+    @Override
+    public void onDisplayPreferenceDialog(Preference preference) {
+        if (preference instanceof TimePickerPreference) {
+            TimePickerDialogFragmentCompat f = TimePickerDialogFragmentCompat.newInstance(preference.getKey());
+            f.setTargetFragment(this, 0);
+            f.show(getFragmentManager(), TimePickerDialogFragmentCompat.FRAGMENT_TAG);
+            return;
+        }
+        super.onDisplayPreferenceDialog(preference);
     }
 
     private void setUi() {
@@ -160,6 +188,13 @@ public class MainFragment extends PreferenceFragmentCompat {
         SwitchPreferenceCompat airmode = createSwitchPref(category, R.string.extra_settings_airmode_title, R.string.extra_settings_airmode_summary,
                 KEY_AIRMODE_ENABLE, Constants.DEFAULT_SETTING_AIRMODE_ENABLE, true);
 
+        createSwitchPref(category, R.string.extra_settings_time_schedule_title, R.string.extra_settings_time_schedule_summary,
+                KEY_TIME_SCHEDULE_ENABLE, Constants.DEFAULT_SETTING_TIME_SCHEDULE_ENABLE, true);
+        createTimePickerPref(category, R.string.extra_settings_time_schedule_start_title,
+                KEY_TIME_SCHEDULE_START, Constants.DEFAULT_SETTING_TIME_SCHEDULE_START, true);
+        createTimePickerPref(category, R.string.extra_settings_time_schedule_end_title,
+                KEY_TIME_SCHEDULE_END, Constants.DEFAULT_SETTING_TIME_SCHEDULE_END, true);
+
         Preference apps = createPreference(category, R.string.extra_settings_apps_title,R.string.extra_settings_apps_summary,"apps", true,
                 v -> {
                     startActivity(new Intent(requireActivity(), AppsSelectActivity.class));
@@ -205,6 +240,18 @@ public class MainFragment extends PreferenceFragmentCompat {
         SwitchPreferenceCompat pref = new SwitchPreferenceCompat(requireActivity());
         if (titleRes > 0) pref.setTitle(titleRes);
         if (summaryRes > 0) pref.setSummary(summaryRes);
+        pref.setEnabled(enabled);
+        pref.setKey(key);
+        pref.setDefaultValue(defaultValue);
+        pref.setIconSpaceReserved(false);
+        if (category != null) category.addPreference(pref);
+        return pref;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private TimePickerPreference createTimePickerPref(PreferenceCategory category, int titleRes, String key, int defaultValue, boolean enabled) {
+        TimePickerPreference pref = new TimePickerPreference(requireActivity());
+        if (titleRes > 0) pref.setTitle(titleRes);
         pref.setEnabled(enabled);
         pref.setKey(key);
         pref.setDefaultValue(defaultValue);

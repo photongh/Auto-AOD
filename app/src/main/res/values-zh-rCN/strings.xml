@@ -14,6 +14,10 @@
     <string name="extra_settings_category_title">额外设置</string>
     <string name="extra_settings_airmode_title">飞行模式开启时禁用服务</string>
     <string name="extra_settings_airmode_summary">开启此功能将会节约电量，比如睡觉时开启飞行模式，则AOD也已经不那么重要了，因为你睡着了，看不到它</string>
+    <string name="extra_settings_time_schedule_title">计划时间</string>
+    <string name="extra_settings_time_schedule_summary">在你设置的计划时间内，核心服务将会禁用自己，以免在你不需要的时间段内浪费电量</string>
+    <string name="extra_settings_time_schedule_start_title">开始时间</string>
+    <string name="extra_settings_time_schedule_end_title">结束时间</string>
     <string name="extra_settings_apps_title">应用管理</string>
     <string name="extra_settings_apps_summary">只有你选择的应用才有效</string>
 

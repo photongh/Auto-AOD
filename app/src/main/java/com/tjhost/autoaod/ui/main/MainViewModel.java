@@ -21,6 +21,9 @@ public class MainViewModel extends AndroidViewModel {
     private MediatorLiveData<Boolean> enableServiceState = new MediatorLiveData<>();
     private MediatorLiveData<Boolean> enableAirModeState = new MediatorLiveData<>();
     private MediatorLiveData<Boolean> serviceRunningState = new MediatorLiveData<>();
+    private MediatorLiveData<Boolean> enableScheduleModeState = new MediatorLiveData<>();
+    private MediatorLiveData<Integer> scheduleStartTime = new MediatorLiveData<>();
+    private MediatorLiveData<Integer> scheduleEndTime = new MediatorLiveData<>();
 
 
     public MainViewModel(@NonNull Application application) {
@@ -42,6 +45,12 @@ public class MainViewModel extends AndroidViewModel {
                 enableAirModeState::setValue);
         serviceRunningState.addSource(mRepo.getServiceRunningState(),
                 serviceRunningState::setValue);
+        enableScheduleModeState.addSource(mRepo.getEnableScheduleModeState(),
+                enableScheduleModeState::setValue);
+        scheduleStartTime.addSource(mRepo.getScheduleStartTime(),
+                scheduleStartTime::setValue);
+        scheduleEndTime.addSource(mRepo.getScheduleEndTime(),
+                scheduleEndTime::setValue);
     }
 
     public void setEnableServiceState(boolean enable) {
@@ -72,11 +81,46 @@ public class MainViewModel extends AndroidViewModel {
         return mRepo.loadServiceRunningState();
     }
 
+    public void setEnableScheduleModeState(boolean enable) {
+        mRepo.saveEnableScheduleModeState(enable);
+    }
+
+    public LiveData<Boolean> getEnableScheduleModeStateLd() {
+        return enableScheduleModeState;
+    }
+
+    public void setScheduleStartTime(int time) {
+        mRepo.saveScheduleStartTime(time);
+    }
+
+    public LiveData<Integer> getScheduleStartTimeLd() {
+        return scheduleStartTime;
+    }
+
+    public void setScheduleEndTime(int time) {
+        mRepo.saveScheduleEndTime(time);
+    }
+
+    public LiveData<Integer> getScheduleEndTimeLd() {
+        return scheduleEndTime;
+    }
+
     public void refreshServiceAirmodeConfig() {
         if (NotificationMonitorService.INSTANCE == null)
             return;
         NotificationMonitorService.INSTANCE.refreshAirmodeConfig();
+    }
 
+    public void refreshScheduleModeConfig() {
+        if (NotificationMonitorService.INSTANCE == null)
+            return;
+        NotificationMonitorService.INSTANCE.refreshScheduleModeConfig();
+    }
+
+    public void refreshScheduleTimeConfig() {
+        if (NotificationMonitorService.INSTANCE == null)
+            return;
+        NotificationMonitorService.INSTANCE.refreshScheduleTimeConfig();
     }
 
     public static void startAODService(Context context) {

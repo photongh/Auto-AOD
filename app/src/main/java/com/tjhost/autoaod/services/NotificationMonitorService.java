@@ -44,8 +44,10 @@ import com.tjhost.autoaod.utils.SettingUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * This service will be
@@ -58,6 +60,10 @@ public class NotificationMonitorService extends NotificationListenerService {
     private List<String> mPackages;
     private boolean isAirmodeNeed; // ui setting switch value
     private boolean airmodeStatus; // phone airplane mode status, true is on
+    private boolean scheduleEnabled; // schedule mode
+    private int scheduleStartTime; // schedule start time
+    private int scheduleEndTime; // schedule end time
+
 
     @Override
     public void onCreate() {
@@ -107,6 +113,8 @@ public class NotificationMonitorService extends NotificationListenerService {
             return;
         if (sbn.isOngoing())
             return;
+        if (shouldDisableBySchedule())
+            return;
         if (!mPackages.contains(sbn.getPackageName()))
             return;
         boolean r = SettingUtil.changeAodMode(this, SettingUtil.MODE_AOD_ALWAYS_ON, 0, 0, 0);
@@ -149,6 +157,46 @@ public class NotificationMonitorService extends NotificationListenerService {
             }
         });
         repo.loadEnableAirmodeState();
+    }
+
+    public void refreshScheduleModeConfig() {
+        SettingRepo repo = DataFactory.getSettingRepo(this.getApplication());
+        // lambda is invalid here because we need the inner class pointer "this"
+        repo.getEnableScheduleModeState().observeForever(new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (DEBUG) Log.d("NotificationService", "refreshScheduleModeConfig");
+                scheduleEnabled = aBoolean;
+                if (DEBUG) Log.d("NotificationService", "now scheduleEnabled = " + scheduleEnabled);
+                repo.getEnableScheduleModeState().removeObserver(this);
+            }
+        });
+        repo.loadEnableScheduleModeState();
+    }
+
+    public void refreshScheduleTimeConfig() {
+        SettingRepo repo = DataFactory.getSettingRepo(this.getApplication());
+        // lambda is invalid here because we need the inner class pointer "this"
+        repo.getScheduleStartTime().observeForever(new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer value) {
+                if (DEBUG) Log.d("NotificationService", "refreshScheduleTimeConfig");
+                scheduleStartTime = value;
+                if (DEBUG) Log.d("NotificationService", "now scheduleStartTime = " + scheduleStartTime);
+                repo.getScheduleStartTime().removeObserver(this);
+            }
+        });
+        repo.getScheduleEndTime().observeForever(new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer value) {
+                if (DEBUG) Log.d("NotificationService", "refreshScheduleTimeConfig");
+                scheduleEndTime = value;
+                if (DEBUG) Log.d("NotificationService", "now scheduleEndTime = " + scheduleEndTime);
+                repo.getScheduleEndTime().removeObserver(this);
+            }
+        });
+        repo.loadScheduleStartTime();
+        repo.loadScheduleEndTime();
     }
 
     public void refreshAppsConfig() {
@@ -256,6 +304,8 @@ public class NotificationMonitorService extends NotificationListenerService {
         if (aBoolean) {
             refreshAirmodeConfig();
             refreshAppsConfig();
+            refreshScheduleModeConfig();
+            refreshScheduleTimeConfig();
             registReceiver();
             return;
         }
@@ -279,6 +329,21 @@ public class NotificationMonitorService extends NotificationListenerService {
     private void stopMonitorConfigServiceState() {
         if (serviceEnableLd != null)
             serviceEnableLd.removeObserver(serviceEnableOb);
+    }
+
+    private boolean shouldDisableBySchedule() {
+        if (!scheduleEnabled)
+            return false;
+        Calendar calendar = Calendar.getInstance(Locale.getDefault());
+        int minutes = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
+        if (scheduleEndTime > scheduleStartTime) {
+            if (minutes < scheduleStartTime || minutes > scheduleEndTime)
+                return false;
+        } else {
+            if (minutes > scheduleEndTime && minutes < scheduleStartTime)
+                return false;
+        }
+        return true;
     }
 
     private void enableForgroundService(Context context) {

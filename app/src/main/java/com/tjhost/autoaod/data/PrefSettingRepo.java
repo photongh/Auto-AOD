@@ -20,6 +20,19 @@ public class PrefSettingRepo extends SettingRepo{
                         mSettings.getBoolean(PrefSettings.KEY_AIRMODE_ENABLE,
                                 DEFAULT_SETTING_AIRMODE_ENABLE));
                 break;
+            case PrefSettings.KEY_TIME_SCHEDULE_ENABLE:
+                setMutableLiveDataValue(getEnableScheduleModeState(),
+                        mSettings.getBoolean(PrefSettings.KEY_TIME_SCHEDULE_ENABLE,
+                                DEFAULT_SETTING_SCHEDULE_MODE_ENABLE));
+            case PrefSettings.KEY_TIME_SCHEDULE_START:
+                setMutableLiveDataValue(getScheduleStartTime(),
+                        mSettings.getInt(PrefSettings.KEY_TIME_SCHEDULE_START,
+                                DEFAULT_SETTING_SCHEDULE_START_TIME));
+                break;
+            case PrefSettings.KEY_TIME_SCHEDULE_END:
+                setMutableLiveDataValue(getScheduleEndTime(),
+                        mSettings.getInt(PrefSettings.KEY_TIME_SCHEDULE_END,
+                                DEFAULT_SETTING_SCHEDULE_END_TIME));
             default:break;
         }
     };
@@ -41,8 +54,23 @@ public class PrefSettingRepo extends SettingRepo{
     }
 
     @Override
+    public void saveEnableScheduleModeState(boolean enable) {
+        mSettings.putBoolean(PrefSettings.KEY_TIME_SCHEDULE_ENABLE, enable);
+    }
+
+    @Override
     public void setServiceRunningState(boolean enable) {
         setMutableLiveDataValue(getServiceRunningState(), enable);
+    }
+
+    @Override
+    public void saveScheduleStartTime(int time) {
+        mSettings.putInt(PrefSettings.KEY_TIME_SCHEDULE_START, time);
+    }
+
+    @Override
+    public void saveScheduleEndTime(int time) {
+        mSettings.putInt(PrefSettings.KEY_TIME_SCHEDULE_END, time);
     }
 
     @Override
@@ -57,6 +85,27 @@ public class PrefSettingRepo extends SettingRepo{
         setMutableLiveDataValue(getEnableAirmodeState(),
                 mSettings.getBoolean(PrefSettings.KEY_AIRMODE_ENABLE, DEFAULT_SETTING_AIRMODE_ENABLE));
         return getEnableAirmodeState();
+    }
+
+    @Override
+    public MediatorLiveData<Boolean> loadEnableScheduleModeState() {
+        setMutableLiveDataValue(getEnableScheduleModeState(),
+                mSettings.getBoolean(PrefSettings.KEY_TIME_SCHEDULE_ENABLE, DEFAULT_SETTING_SCHEDULE_MODE_ENABLE));
+        return getEnableScheduleModeState();
+    }
+
+    @Override
+    public MediatorLiveData<Integer> loadScheduleStartTime() {
+        setMutableLiveDataValue(getScheduleStartTime(),
+                mSettings.getInt(PrefSettings.KEY_TIME_SCHEDULE_START, DEFAULT_SETTING_SCHEDULE_START_TIME));
+        return getScheduleStartTime();
+    }
+
+    @Override
+    public MediatorLiveData<Integer> loadScheduleEndTime() {
+        setMutableLiveDataValue(getScheduleEndTime(),
+                mSettings.getInt(PrefSettings.KEY_TIME_SCHEDULE_END, DEFAULT_SETTING_SCHEDULE_END_TIME));
+        return getScheduleEndTime();
     }
 
     @Override

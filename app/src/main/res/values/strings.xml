@@ -18,6 +18,12 @@
     <string name="extra_settings_airmode_title">Disable service while airplane mode on</string>
     <string name="extra_settings_airmode_summary">Enable it can save your battery. Usually you go to sleep with your phone\'s airplane mode turned on and
         the AOD is not necessary at that moment</string>
+    <string name="extra_settings_time_schedule_title">Time schedule</string>
+    <string name="extra_settings_time_schedule_summary">Between the start time and end time you set below,
+        the service disable itself every day in this time</string>
+    <string name="extra_settings_time_schedule_start_title">Start time</string>
+    <string name="extra_settings_time_schedule_end_title">End time</string>
+
     <string name="extra_settings_apps_title">Application management</string>
     <string name="extra_settings_apps_summary">Only the selected apps can be effected</string>
 

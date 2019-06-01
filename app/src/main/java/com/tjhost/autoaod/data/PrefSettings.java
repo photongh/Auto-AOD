@@ -17,6 +17,9 @@ public class PrefSettings {
     public static final String CONFIG_MAIN_NAME = "main_config";
     public static final String KEY_SERVICE_ENABLE = "enable_service";
     public static final String KEY_AIRMODE_ENABLE = "enable_airmode";
+    public static final String KEY_TIME_SCHEDULE_ENABLE = "enable_schedule";
+    public static final String KEY_TIME_SCHEDULE_START = "schedule_start";
+    public static final String KEY_TIME_SCHEDULE_END = "schedule_end";
 
     public static final String CONFIG_APPS_NAME = "apps_config";
     public static final String KEY_APPS_LIST = "app_list";
@@ -47,6 +50,14 @@ public class PrefSettings {
 
     public SharedPreferences getSharedPreferences() {
         return sp;
+    }
+
+    public void putInt(String key, int value) {
+        edit().putInt(key, value).apply();
+    }
+
+    public int getInt(String key, int defaultValue) {
+        return sp.getInt(key, defaultValue);
     }
 
     public void putBoolean(String key, boolean value) {

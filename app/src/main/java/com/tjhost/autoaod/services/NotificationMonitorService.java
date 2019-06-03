@@ -246,6 +246,11 @@ public class NotificationMonitorService extends NotificationListenerService {
         originalAodStartTime = SettingUtil.getAodStartTime(this);
         originalAodEndTime = SettingUtil.getAodEndTime(this);
         //enableForgroundService(this);
+        if (DEBUG) Log.d("NotificationService", "init originalAodTapMode = " + originalAodTapMode);
+        if (DEBUG) Log.d("NotificationService", "init originalAodMode = " + originalAodMode);
+        if (DEBUG) Log.d("NotificationService", "init originalAodStartTime = " + originalAodStartTime);
+        if (DEBUG) Log.d("NotificationService", "init originalAodEndTime = " + originalAodEndTime);
+
     }
 
     private void release() {
@@ -257,7 +262,11 @@ public class NotificationMonitorService extends NotificationListenerService {
     }
 
     private void restoreAodMode() {
-        if (DEBUG) Log.d("NotificationService", "originalAodMode = " + originalAodMode);
+        if (DEBUG) Log.d("NotificationService", "restoreAodMode originalAodTapMode = " + originalAodTapMode);
+        if (DEBUG) Log.d("NotificationService", "restoreAodMode originalAodMode = " + originalAodMode);
+        if (DEBUG) Log.d("NotificationService", "restoreAodMode originalAodStartTime = " + originalAodStartTime);
+        if (DEBUG) Log.d("NotificationService", "restoreAodMode originalAodEndTime = " + originalAodEndTime);
+
         if (originalAodTapMode != SettingUtil.getAodTapMode(this)) {
             boolean r = SettingUtil.changeAodMode(this, originalAodTapMode,
                     originalAodMode, originalAodStartTime, originalAodEndTime);

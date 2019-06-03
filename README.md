@@ -1,9 +1,9 @@
 # Auto-AOD
 
-<img alt="screenshot1" src="./screenshot/device-2019-05-29-162958.png" width="30%">
-<img alt="screenshot2" src="./screenshot/device-2019-05-29-163043.png" width="30%">
+<img alt="screenshot1" src="./screenshot/screenshot_20190603142307.jpg" width="30%">
+<img alt="screenshot2" src="./screenshot/screenshot_20190603142226.jpg" width="30%">
 
-Auto AOD is developed for Samsung s10/s10+/s10e. Other phone may be OK too.
+Auto AOD is developed for Samsung s10/s10+/s10e.
 
 As the notification LED is absent on Samsung S10 and Samsung company may not update the software solution, I 
 create this app to take advantage of the Samsung's AOD(Always On Display) feature to show me the new un-read 

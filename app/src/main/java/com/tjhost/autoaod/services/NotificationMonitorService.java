@@ -204,7 +204,7 @@ public class NotificationMonitorService extends NotificationListenerService {
     public void refreshAppsConfig() {
         AppsRepo repo1 = DataFactory.getAppsRepo(this.getApplication());
         // lambda is invalid here because we need the inner class pointer "this"
-        repo1.loadApps(app -> app.checked).observeForever(new Observer<List<UserApps>>() {
+        repo1.loadApps(app -> app.checked, true).observeForever(new Observer<List<UserApps>>() {
             @Override
             public void onChanged(List<UserApps> userApps) {
                 if (DEBUG) Log.d("NotificationService", "refreshAppsConfig");

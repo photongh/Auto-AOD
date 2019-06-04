@@ -23,7 +23,7 @@ public abstract class AppsRepo extends Repo{
     public abstract void clearApps();
 
     public abstract MediatorLiveData<List<UserApps>> loadAllApps();
-    public abstract MediatorLiveData<List<UserApps>> loadApps(AppsViewModel.AppsFilter filter);
+    public abstract MediatorLiveData<List<UserApps>> loadApps(AppsViewModel.AppsFilter filter, boolean loadPackageNameOnly);
 
     public MediatorLiveData<List<UserApps>> getApplications() {
         return applications;

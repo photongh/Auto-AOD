@@ -2,7 +2,6 @@ package com.tjhost.autoaod.data;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import androidx.lifecycle.MediatorLiveData;
@@ -95,23 +94,25 @@ public class PrefAppsRepo extends AppsRepo {
 
     @Override
     public MediatorLiveData<List<UserApps>> loadAllApps() {
-        return loadApps(null);
+        return loadApps(null, false);
     }
 
     @Override
-    public MediatorLiveData<List<UserApps>> loadApps(AppsViewModel.AppsFilter filter) {
+    public MediatorLiveData<List<UserApps>> loadApps(AppsViewModel.AppsFilter filter, boolean loadPackageNameOnly) {
         AppExecutors.getInstance().normalThread().execute(() -> {
             PackageManager pm = getContext().getPackageManager();
-            List<PackageInfo> lists = pm.getInstalledPackages(0);
+            List<ApplicationInfo> lists = pm.getInstalledApplications(0);
             List<UserApps> apps = new ArrayList<>();
-            for (PackageInfo info : lists) {
+            for (ApplicationInfo info : lists) {
                 UserApps app = new UserApps();
                 app.pkg = info.packageName;
                 app.checked = false;
-                app.name = (String) info.applicationInfo.loadLabel(pm);
-                app.icon = info.applicationInfo.loadIcon(pm);
-                app.isSystem = (info.applicationInfo.flags &
-                        ApplicationInfo.FLAG_SYSTEM) != 0;
+                if (!loadPackageNameOnly) {
+                    app.name = (String) info.loadLabel(pm);
+                    app.icon = info.loadIcon(pm);
+                    app.isSystem = (info.flags &
+                            ApplicationInfo.FLAG_SYSTEM) != ApplicationInfo.FLAG_SYSTEM;
+                }
                 apps.add(app);
             }
 
@@ -125,12 +126,14 @@ public class PrefAppsRepo extends AppsRepo {
                 }
             }
 
-            Collections.sort(apps, (o1, o2) -> {
-                if (o1.checked != o2.checked) {
-                    return o1.checked ? -1 : 1;
-                }
-                return o1.compareTo(o2);
-            });
+            if (!loadPackageNameOnly) {
+                Collections.sort(apps, (o1, o2) -> {
+                    if (o1.checked != o2.checked) {
+                        return o1.checked ? -1 : 1;
+                    }
+                    return o1.compareTo(o2);
+                });
+            }
 
             if (filter != null) {
                 Iterator<UserApps> iter = apps.iterator();

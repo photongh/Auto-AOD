@@ -15,6 +15,9 @@ import java.util.Set;
 
 import androidx.core.app.NotificationManagerCompat;
 
+import com.tjhost.autoaod.Constants;
+import com.tjhost.autoaod.services.NotificationMonitorService;
+
 public class SettingUtil {
     public static boolean isWritable (Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -122,6 +125,21 @@ public class SettingUtil {
 
     public static boolean isScreenOnAndLocked(Context context) {
         return isScreenOn(context) && isScreenLocked(context);
+    }
+
+    // return 0 means failed
+    public static int getScreenTimeoutTime(Context context) {
+        return Settings.System.getInt(context.getContentResolver(),
+                Settings.System.SCREEN_OFF_TIMEOUT, 0);
+    }
+
+    public static void refreshDebugState(boolean debug) {
+        Constants.DEBUG = debug;
+        NotificationMonitorService.DEBUG = debug;
+    }
+
+    public static boolean getDebugState() {
+        return Constants.DEBUG;
     }
 
     public static boolean isNotificationPermissionGranted(Context context) {

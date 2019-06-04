@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
     android:clickable="true"
     android:background="@drawable/app_list_item_bg"
     android:paddingLeft="16dp"
@@ -16,22 +15,48 @@
         android:id="@+id/app_icon"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:src="@android:drawable/sym_def_app_icon"/>
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/app_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        app:layout_constraintLeft_toRightOf="@+id/app_icon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/app_pkg"
+        app:layout_constraintRight_toLeftOf="@+id/app_switch"
+        app:layout_constraintHorizontal_weight="1"
         android:layout_marginStart="16dp"
         android:singleLine="true"
+        android:textColor="@android:color/primary_text_light"
+        android:textSize="16sp"
+        android:text="Unknown"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/app_pkg"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@+id/app_name"
+        app:layout_constraintTop_toBottomOf="@+id/app_name"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="@+id/app_name"
+        app:layout_constraintHorizontal_weight="1"
+        android:textColor="@android:color/secondary_text_light"
+        android:textSize="14sp"
         android:text="Unknown"/>
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/app_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@+id/app_name"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginStart="16dp"
         android:checked="false"/>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

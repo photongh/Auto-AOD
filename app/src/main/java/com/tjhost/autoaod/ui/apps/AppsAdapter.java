@@ -42,6 +42,7 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.VH>{
     public void onBindViewHolder(@NonNull VH holder, int position) {
         UserApps apps = mAppstList.get(position);
         holder.name.setText(apps.name);
+        holder.pkg.setText(apps.pkg);
         holder.switchCompat.setChecked(apps.checked);
         holder.icon.setImageDrawable(apps.icon);
     }
@@ -85,13 +86,14 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.VH>{
 
     class VH extends RecyclerView.ViewHolder{
         AppCompatImageView icon;
-        AppCompatTextView name;
+        AppCompatTextView name, pkg;
         SwitchCompat switchCompat;
 
         public VH(View v) {
             super(v);
             icon = v.findViewById(R.id.app_icon);
             name = v.findViewById(R.id.app_name);
+            pkg = v.findViewById(R.id.app_pkg);
             switchCompat = v.findViewById(R.id.app_switch);
             if (appsClickCallback != null) {
                 v.setOnClickListener(vv -> appsClickCallback.onClick(

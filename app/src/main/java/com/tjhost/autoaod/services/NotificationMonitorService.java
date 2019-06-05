@@ -34,6 +34,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import com.tjhost.autoaod.Constants;
+import com.tjhost.autoaod.core.NotifyEngine;
 import com.tjhost.autoaod.data.AppsRepo;
 import com.tjhost.autoaod.data.DataFactory;
 import com.tjhost.autoaod.data.SettingRepo;
@@ -64,6 +65,7 @@ public class NotificationMonitorService extends NotificationListenerService {
     private int scheduleStartTime; // schedule start time
     private int scheduleEndTime; // schedule end time
     private boolean isLightScreenNeed; // light screen on
+    private NotifyEngine mEngine;
 
     @Override
     public void onCreate() {
@@ -105,36 +107,15 @@ public class NotificationMonitorService extends NotificationListenerService {
         if (DEBUG) Log.d(LOG_TAG, "notification content = " + sbn.getNotification().extras.getString(Notification.EXTRA_TEXT));
         if (DEBUG) Log.d(LOG_TAG, "notification is ongoing = " + sbn.isOngoing());
 
-        if (isAirmodeNeed && airmodeStatus) {
-            if (DEBUG) Log.d(LOG_TAG, "ignore this notification, isAirmodeNeed && airmodeStatus");
+        if (mEngine != null && !mEngine.onNotificationPosted(sbn))
             return;
-        }
-        if (SettingUtil.isScreenOnAndUnlocked(this)) {
-            if (DEBUG) Log.d(LOG_TAG, "ignore this notification, isScreenOnAndUnlocked");
-            return;
-        }
-        if (SettingUtil.getAodTapMode(this) == SettingUtil.MODE_AOD_ALWAYS_ON) {
-            if (DEBUG) Log.d(LOG_TAG, "ignore this notification, getAodTapMode = MODE_AOD_ALWAYS_ON");
-            return;
-        }
-        if (sbn.isOngoing()) {
-            if (DEBUG) Log.d(LOG_TAG, "ignore this notification, notification isOngoing");
-            return;
-        }
-        if (shouldDisableBySchedule()) {
-            if (DEBUG) Log.d(LOG_TAG, "ignore this notification, shouldDisableBySchedule");
-            return;
-        }
-        if (!mPackages.contains(sbn.getPackageName())) {
-            if (DEBUG) Log.d(LOG_TAG, "ignore this notification, not in mPackages");
-            return;
-        }
+
         if (isLightScreenNeed) {
             if (DEBUG) Log.d(LOG_TAG, "light screen on");
             SettingUtil.lightScreenOn(this);
         }
 
-        boolean r = SettingUtil.changeAodMode(this, SettingUtil.MODE_AOD_ALWAYS_ON, 0, 0, 0);
+        boolean r = enableAodAlwaysOn();
         if (DEBUG) Log.d(LOG_TAG, "change aod mode to always on success ? " + r);
     }
 
@@ -144,22 +125,22 @@ public class NotificationMonitorService extends NotificationListenerService {
         if (DEBUG) Log.d(LOG_TAG, "notification package = " + sbn.getPackageName());
         if (DEBUG) Log.d(LOG_TAG, "notification content = " + sbn.getNotification().extras.getString(Notification.EXTRA_TEXT));
 
-        if (sbn.isOngoing()) {
-            if (DEBUG) Log.d(LOG_TAG, "ignore this notification, notification isOngoing");
+        if (mEngine != null && !mEngine.onNotificationRemoved(sbn))
             return;
-        }
+
         restoreAodMode();
     }
 
     void onScreenOn() {
-
+        if (mEngine != null) mEngine.onScreenOn();
     }
 
     void onScreenOff() {
-
+        if (mEngine != null) mEngine.onScreenOff();
     }
 
     void onUserPresent() {
+        if (mEngine != null) mEngine.onScreenUnlocked();
         restoreAodMode();
     }
 
@@ -172,6 +153,7 @@ public class NotificationMonitorService extends NotificationListenerService {
                 if (DEBUG) Log.d(LOG_TAG, "refreshAirmodeConfig");
                 isAirmodeNeed = aBoolean;
                 if (DEBUG) Log.d(LOG_TAG, "now isAirmodeNeed = " + isAirmodeNeed);
+                if (mEngine != null) mEngine.setAirmodeNeed(isAirmodeNeed);
                 repo.getEnableAirmodeState().removeObserver(this);
             }
         });
@@ -187,6 +169,7 @@ public class NotificationMonitorService extends NotificationListenerService {
                 if (DEBUG) Log.d(LOG_TAG, "refreshScheduleModeConfig");
                 scheduleEnabled = aBoolean;
                 if (DEBUG) Log.d(LOG_TAG, "now scheduleEnabled = " + scheduleEnabled);
+                if (mEngine != null) mEngine.setScheduleEnabled(scheduleEnabled);
                 repo.getEnableScheduleModeState().removeObserver(this);
             }
         });
@@ -202,6 +185,7 @@ public class NotificationMonitorService extends NotificationListenerService {
                 if (DEBUG) Log.d(LOG_TAG, "refreshScheduleTimeConfig");
                 scheduleStartTime = value;
                 if (DEBUG) Log.d(LOG_TAG, "now scheduleStartTime = " + scheduleStartTime);
+                if (mEngine != null) mEngine.setScheduleStartTime(scheduleStartTime);
                 repo.getScheduleStartTime().removeObserver(this);
             }
         });
@@ -211,6 +195,7 @@ public class NotificationMonitorService extends NotificationListenerService {
                 if (DEBUG) Log.d(LOG_TAG, "refreshScheduleTimeConfig");
                 scheduleEndTime = value;
                 if (DEBUG) Log.d(LOG_TAG, "now scheduleEndTime = " + scheduleEndTime);
+                if (mEngine != null) mEngine.setScheduleEndTime(scheduleEndTime);
                 repo.getScheduleEndTime().removeObserver(this);
             }
         });
@@ -235,6 +220,7 @@ public class NotificationMonitorService extends NotificationListenerService {
                 }
                 if (DEBUG) Log.d(LOG_TAG, "now mPackages: ");
                 if (DEBUG) Log.d(LOG_TAG, Arrays.toString(mPackages.toArray())+"");
+                if (mEngine != null) mEngine.setPackages(mPackages);
                 repo1.getApplications().removeObserver(this);
             }
         });
@@ -267,7 +253,6 @@ public class NotificationMonitorService extends NotificationListenerService {
         if (DEBUG) Log.d(LOG_TAG, "init originalAodMode = " + originalAodMode);
         if (DEBUG) Log.d(LOG_TAG, "init originalAodStartTime = " + originalAodStartTime);
         if (DEBUG) Log.d(LOG_TAG, "init originalAodEndTime = " + originalAodEndTime);
-
     }
 
     private void release() {
@@ -276,9 +261,10 @@ public class NotificationMonitorService extends NotificationListenerService {
             MainFragment.mainViewModel.setServiceRunningState(false);
         stopMonitorConfigServiceState();
         unregistReceiver();
+        if (mEngine != null) mEngine.release();
     }
 
-    private void restoreAodMode() {
+    public void restoreAodMode() {
         if (DEBUG) Log.d(LOG_TAG, "restoreAodMode originalAodTapMode = " + originalAodTapMode);
         if (DEBUG) Log.d(LOG_TAG, "restoreAodMode originalAodMode = " + originalAodMode);
         if (DEBUG) Log.d(LOG_TAG, "restoreAodMode originalAodStartTime = " + originalAodStartTime);
@@ -289,6 +275,11 @@ public class NotificationMonitorService extends NotificationListenerService {
                     originalAodMode, originalAodStartTime, originalAodEndTime);
             if (DEBUG) Log.d(LOG_TAG, "change aod mode to original success ? " + r);
         }
+    }
+
+    public boolean enableAodAlwaysOn() {
+        return SettingUtil.changeAodMode(this, SettingUtil.MODE_AOD_ALWAYS_ON,
+                0, 0, 0);
     }
 
     private void registReceiver() {
@@ -336,6 +327,7 @@ public class NotificationMonitorService extends NotificationListenerService {
             if (Intent.ACTION_AIRPLANE_MODE_CHANGED.equals(action)) {
                 airmodeStatus = intent.getBooleanExtra("state", false);
                 if (DEBUG) Log.d(LOG_TAG, "airmodeReceiver, airmodeStatus = " + airmodeStatus);
+                if (mEngine != null) mEngine.setAirmodeStatus(airmodeStatus);
             }
         }
     };
@@ -345,6 +337,7 @@ public class NotificationMonitorService extends NotificationListenerService {
         if (DEBUG) Log.d(LOG_TAG, "serviceEnableOb onchange, aBoolean = " + aBoolean);
         stopMonitorConfigServiceState();
         if (aBoolean) {
+            mEngine = NotifyEngine.getInstance(this);
             refreshAirmodeConfig();
             refreshAppsConfig();
             refreshScheduleModeConfig();

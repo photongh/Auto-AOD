@@ -23,7 +23,8 @@
 
     <string name="tool_settings_category_title">工具</string>
     <string name="tool_settings_light_screen_title">通知亮屏</string>
-    <string name="tool_settings_light_screen_summary">当所选择的应用有新的通知时，点亮屏幕</string>
+    <string name="tool_settings_light_screen_summary">当所选择的应用有新的通知时，点亮屏幕。如果你在系统设置中启用了本应用
+        的熄屏侧屏闪光，那么有新的消息时，侧屏闪光会亮起（侧屏闪光内容空白，永远不会修复）</string>
 
     <string name="app_select_label">选择应用程序</string>
     <string name="app_select_menu_select_all">全选</string>

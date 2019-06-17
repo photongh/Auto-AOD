@@ -65,8 +65,16 @@ public class SettingUtil {
             default:break;
         }
 
-        r = Settings.System.putInt(context.getContentResolver(),
-                "aod_mode", aodSwitch);
+        if (getCurrentAodState(context) == 1) {
+            r = Settings.System.putInt(context.getContentResolver(),
+                    "aod_mode", 0);
+            if (aodSwitch == 1)
+                handler.postDelayed(() -> Settings.System.putInt(context.getContentResolver(),
+                    "aod_mode", aodSwitch), 100);
+        } else {
+            r = Settings.System.putInt(context.getContentResolver(),
+                    "aod_mode", aodSwitch);
+        }
 
         return r;
     }
@@ -74,6 +82,11 @@ public class SettingUtil {
     public static int getAodMode(Context context) {
         return Settings.System.getInt(context.getContentResolver(),
                 "aod_mode", 0);
+    }
+
+    public static int getCurrentAodState(Context context) {
+        return Settings.System.getInt(context.getContentResolver(),
+                "aod_show_state", 0);
     }
 
     public static int getAodStartTime(Context context) {

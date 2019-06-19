@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="notification_channel_tips_label">小提示</string>
+    <string name="notification_channel_tips_description">一些有用的小提示</string>
+    <string name="notification_accessibility_service_title">辅助服务</string>
+    <string name="notification_accessibility_service_text">开启辅助服务后，可以更智能地显示熄屏提醒哦（不耗电）</string>
     <string name="notification_monitor_service_label">Auto AOD 通知监视服务</string>
+    <string name="key_monitor_service_label">Auto AOD 按键监视服务</string>
+    <string name="key_monitor_service_description">监听手机物理按键，用来提高AOD显示的准确性</string>
     <string name="dialog_common_pos">确定</string>
     <string name="dialog_common_neg">取消</string>
     <string name="dialog_open_notification_permission_msg">请允许本程序读取系统通知</string>

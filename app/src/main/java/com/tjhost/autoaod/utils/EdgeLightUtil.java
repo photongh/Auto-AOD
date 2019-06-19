@@ -17,40 +17,6 @@ import com.tjhost.autoaod.R;
 // ############################################################
 
 public class EdgeLightUtil {
-
-    private void showTestNotification(Context context) {
-        NotificationCompat.Builder n = new NotificationCompat.Builder(context, "edge_light")
-                .setContentTitle("test title")
-                .setContentText("content")
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true);
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-
-        // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(152, n.build());
-    }
-
-    private void dismissTestNotification(Context context){
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-
-        // notificationId is a unique int for each notification that you must define
-        notificationManager.cancel(152);
-    }
-
-    private void createNotificationChannel(String channelId, Context context) {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            CharSequence name = "edge light";
-            String description = "edge light description";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(channelId, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
+    // empty
+    // util methods moved to NotificationUtil
 }

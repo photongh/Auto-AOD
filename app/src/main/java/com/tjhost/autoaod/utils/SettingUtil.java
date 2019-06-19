@@ -16,6 +16,7 @@ import java.util.Set;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.tjhost.autoaod.Constants;
+import com.tjhost.autoaod.services.KeyMonitorService;
 import com.tjhost.autoaod.services.NotificationMonitorService;
 
 public class SettingUtil {
@@ -149,6 +150,7 @@ public class SettingUtil {
     public static void refreshDebugState(boolean debug) {
         Constants.DEBUG = debug;
         NotificationMonitorService.DEBUG = debug;
+        KeyMonitorService.DEBUG = debug;
     }
 
     public static boolean getDebugState() {

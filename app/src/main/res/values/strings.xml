@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name" translatable="false">Auto AOD</string>
+    <string name="notification_channel_tips_label">Tips</string>
+    <string name="notification_channel_tips_description">Useful tips</string>
+    <string name="notification_accessibility_service_title">Accessibility service</string>
+    <string name="notification_accessibility_service_text">You can get it more intelligent by enable the accessibility service</string>
     <string name="notification_monitor_service_label">Auto AOD notification monitor service</string>
+    <string name="key_monitor_service_label">Auto AOD key monitor service</string>
+    <string name="key_monitor_service_description">listen to phone physical keys and decide whether to show AOD</string>
     <string name="dialog_common_pos">Ok</string>
     <string name="dialog_common_neg">Cancel</string>
     <string name="dialog_open_notification_permission_msg">We need to listen to system notification service to do

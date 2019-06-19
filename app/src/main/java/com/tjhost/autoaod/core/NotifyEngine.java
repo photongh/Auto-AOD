@@ -4,6 +4,7 @@ import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
 import com.tjhost.autoaod.Constants;
+import com.tjhost.autoaod.services.KeyMonitorService;
 import com.tjhost.autoaod.services.NotificationMonitorService;
 import com.tjhost.autoaod.utils.SettingUtil;
 
@@ -127,7 +128,9 @@ public class NotifyEngine {
     public void onScreenOff() {
         if ((System.currentTimeMillis() - lastNotificationTime) < screenTimeoutTime) {
             if (DEBUG) Log.d(LOG_TAG, "this notification may be missed by you, enable AOD");
-            service.enableAodAlwaysOn();
+            if (!shoouldDisableByAccessibilityService()) {
+                service.enableAodAlwaysOn();
+            }
         }
     }
 
@@ -147,6 +150,23 @@ public class NotifyEngine {
         if (mPackages == null)
             return false;
         return mPackages.contains(pkg);
+    }
+
+    private boolean shoouldDisableByAccessibilityService() {
+        synchronized (KeyMonitorService.class) {
+            if (KeyMonitorService.INSTANCE == null)
+                return false;
+            if ((System.currentTimeMillis() - KeyMonitorService.INSTANCE.lastManualLockphoneTime) < 5000) {
+                if (DEBUG) Log.d(LOG_TAG, "power key pressed by user, disable AOD");
+                return true;
+            }
+            if ((System.currentTimeMillis() - KeyMonitorService.INSTANCE.lastInteractionTime) < screenTimeoutTime) {
+                if (DEBUG) Log.d(LOG_TAG, "user had interacted with phone, the notification " +
+                        "may be not important, disable AOD");
+                return true;
+            }
+            return false;
+        }
     }
 
     private boolean shouldDisableBySchedule() {

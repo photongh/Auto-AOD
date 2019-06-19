@@ -10,4 +10,5 @@ public class Constants {
     public static final int DEFAULT_SETTING_TIME_SCHEDULE_END = 420;
     public static final boolean DEFAULT_SETTING_LIGHT_SCREEN_ON = false;
 
+    public static final String NOTIFICATION_CHANNEL_ID_TIPS = "tips";
 }

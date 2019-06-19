@@ -13,7 +13,9 @@ import androidx.lifecycle.MediatorLiveData;
 
 import com.tjhost.autoaod.data.DataFactory;
 import com.tjhost.autoaod.data.SettingRepo;
+import com.tjhost.autoaod.services.KeyMonitorService;
 import com.tjhost.autoaod.services.NotificationMonitorService;
+import com.tjhost.autoaod.utils.NotificationUtil;
 
 public class MainViewModel extends AndroidViewModel {
     private SettingRepo mRepo;
@@ -164,5 +166,13 @@ public class MainViewModel extends AndroidViewModel {
         }
     }
 
+    public static void stopKeyService() {
+        KeyMonitorService.exit();
+    }
+
+    public static void checkAndNotifyKeyService(Context context) {
+        if (KeyMonitorService.INSTANCE == null)
+            NotificationUtil.showAccessibilityServiceNotification(context);
+    }
 
 }

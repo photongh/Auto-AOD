@@ -140,6 +140,10 @@ public class NotificationMonitorService extends NotificationListenerService {
     }
 
     void onUserPresent() {
+        synchronized (KeyMonitorService.class) {
+            if (KeyMonitorService.INSTANCE != null)
+                KeyMonitorService.INSTANCE.calLastInteractionTime(null);
+        }
         if (mEngine != null) mEngine.onScreenUnlocked();
         restoreAodMode();
     }

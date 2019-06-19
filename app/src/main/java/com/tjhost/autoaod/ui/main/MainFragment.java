@@ -74,8 +74,10 @@ public class MainFragment extends PreferenceFragmentCompat {
             if (DEBUG) Log.d("MainFragment", "getEnableServiceStateLd change, aBoolean = " + aBoolean);
             if (aBoolean) {
                 MainViewModel.startAODService(requireActivity());
+                MainViewModel.checkAndNotifyKeyService(requireActivity());
             } else {
                 MainViewModel.stopAODService(requireActivity());
+                MainViewModel.stopKeyService();
             }
         });
         mainViewModel.getEnableAirmodeStateLd().observe(this, aBoolean -> {

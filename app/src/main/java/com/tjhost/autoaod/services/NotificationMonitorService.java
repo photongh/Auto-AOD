@@ -107,13 +107,13 @@ public class NotificationMonitorService extends NotificationListenerService {
         if (DEBUG) Log.d(LOG_TAG, "notification content = " + sbn.getNotification().extras.getString(Notification.EXTRA_TEXT));
         if (DEBUG) Log.d(LOG_TAG, "notification is ongoing = " + sbn.isOngoing());
 
-        if (mEngine != null && !mEngine.onNotificationPosted(sbn))
-            return;
-
         if (isLightScreenNeed) {
             if (DEBUG) Log.d(LOG_TAG, "light screen on");
             SettingUtil.lightScreenOn(this);
         }
+
+        if (mEngine != null && !mEngine.onNotificationPosted(sbn))
+            return;
 
         boolean r = enableAodAlwaysOn();
         if (DEBUG) Log.d(LOG_TAG, "change aod mode to always on success ? " + r);

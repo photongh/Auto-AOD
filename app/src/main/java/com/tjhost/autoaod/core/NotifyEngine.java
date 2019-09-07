@@ -1,5 +1,9 @@
 package com.tjhost.autoaod.core;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
@@ -26,6 +30,8 @@ public class NotifyEngine {
     private int scheduleEndTime; // schedule end time
     private int screenTimeoutTime; // screen timeout time in system settings, ms
     private long lastNotificationTime; // the last notification from applications you selected while screen stays on
+    private StatusBarNotification lastPendingNotification; // last notification in schedule time
+    private boolean isTimeTickerReceiverRegisted;
 
     private static volatile NotifyEngine instance;
 
@@ -47,6 +53,9 @@ public class NotifyEngine {
 
     public void release() {
         instance = null;
+        if (isTimeTickerReceiverRegisted) {
+            service.unregisterReceiver(timeTickerReceiver);
+        }
     }
 
     private void init() {
@@ -85,6 +94,7 @@ public class NotifyEngine {
         }
         if (shouldDisableBySchedule()) {
             if (DEBUG) Log.d(LOG_TAG, "ignore this notification, shouldDisableBySchedule");
+            enterScheduleTime(sbn);
             return false;
         }
         if (!containsPackage(sbn.getPackageName())) {
@@ -114,6 +124,7 @@ public class NotifyEngine {
         }
         if (service.getActiveNotifications().length == 0) {
             lastNotificationTime = 0L;
+            lastPendingNotification = null;
             if (DEBUG) Log.d(LOG_TAG, "no notifications, restore AOD");
             return true;
         }
@@ -135,6 +146,25 @@ public class NotifyEngine {
     }
 
     public void onScreenUnlocked() {
+    }
+
+
+    void enterScheduleTime(StatusBarNotification sbn) {
+        if (DEBUG) Log.d(LOG_TAG, "enterScheduleTime");
+        lastPendingNotification = sbn;
+        if (!isTimeTickerReceiverRegisted) {
+            isTimeTickerReceiverRegisted = true;
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(Intent.ACTION_TIME_TICK);
+            service.registerReceiver(timeTickerReceiver, filter);
+        }
+    }
+
+    void exitScheduleTime() {
+        if (DEBUG) Log.d(LOG_TAG, "exitScheduleTime");
+        lastPendingNotification = null;
+        service.unregisterReceiver(timeTickerReceiver);
+        isTimeTickerReceiverRegisted = false;
     }
 
     public List<String> getPackages() {
@@ -224,4 +254,22 @@ public class NotifyEngine {
         this.scheduleEndTime = scheduleEndTime;
     }
 
+
+    private BroadcastReceiver timeTickerReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (Intent.ACTION_TIME_TICK.equals(intent.getAction())) {
+                if (DEBUG) Log.d(LOG_TAG, "onReceive ACTION_TIME_TICK");
+                boolean r = shouldDisableBySchedule();
+                if (service.getActiveNotifications().length == 0) {
+                    exitScheduleTime();
+                }
+                if (!r && lastPendingNotification != null) {
+                    if (DEBUG) Log.d(LOG_TAG, "re-post notification after schedule time");
+                    service.onNotificationPosted(lastPendingNotification);
+                    exitScheduleTime();
+                }
+            }
+        }
+    };
 }

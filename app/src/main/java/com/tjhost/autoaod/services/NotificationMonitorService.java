@@ -107,11 +107,6 @@ public class NotificationMonitorService extends NotificationListenerService {
         if (DEBUG) Log.d(LOG_TAG, "notification content = " + sbn.getNotification().extras.getString(Notification.EXTRA_TEXT));
         if (DEBUG) Log.d(LOG_TAG, "notification is ongoing = " + sbn.isOngoing());
 
-        if (isLightScreenNeed) {
-            if (DEBUG) Log.d(LOG_TAG, "light screen on");
-            SettingUtil.lightScreenOn(this);
-        }
-
         if (mEngine != null && !mEngine.onNotificationPosted(sbn))
             return;
 
@@ -239,6 +234,7 @@ public class NotificationMonitorService extends NotificationListenerService {
                 if (DEBUG) Log.d(LOG_TAG, "getEnableLightScreenState");
                 isLightScreenNeed = aBoolean;
                 if (DEBUG) Log.d(LOG_TAG, "now isLightScreenNeed = " + isLightScreenNeed);
+                if (mEngine != null) mEngine.setLightScreenNeed(isLightScreenNeed);
                 repo.getEnableLightScreenState().removeObserver(this);
             }
         });

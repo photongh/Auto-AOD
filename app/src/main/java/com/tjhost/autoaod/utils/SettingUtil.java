@@ -122,7 +122,7 @@ public class SettingUtil {
         Display[] displays = powerManager.getDisplays();
         if (displays == null || displays.length == 0) return false;
         int state = displays[0].getState();
-        if (state != Display.STATE_OFF && state != Display.STATE_UNKNOWN)
+        if (state == Display.STATE_ON || state == Display.STATE_ON_SUSPEND)
             return true;
         return false;
     }

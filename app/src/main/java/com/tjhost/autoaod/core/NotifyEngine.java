@@ -30,6 +30,7 @@ public class NotifyEngine {
     private int scheduleEndTime; // schedule end time
     private int screenTimeoutTime; // screen timeout time in system settings, ms
     private long lastNotificationTime; // the last notification from applications you selected while screen stays on
+    private boolean isLightScreenNeed; // light screen on
     private StatusBarNotification lastPendingNotification; // last notification in schedule time
     private boolean isTimeTickerReceiverRegisted;
 
@@ -71,6 +72,16 @@ public class NotifyEngine {
      * @return false if this notification will be ignored, otherwise showing the AOD
      */
     public boolean onNotificationPosted(StatusBarNotification sbn) {
+        //  only for edge lighting
+        if (isLightScreenNeed && !SettingUtil.isScreenOn(service)) {
+            if (!sbn.isOngoing() && containsPackage(sbn.getPackageName())) {
+                if (DEBUG) Log.d(LOG_TAG, "package matches, light screen on now");
+                SettingUtil.lightScreenOn(service);
+            }
+        } else {
+            if (DEBUG) Log.d(LOG_TAG, "condition not matches, light screen on fail");
+        }
+
         if (isAirmodeNeed && airmodeStatus) {
             if (DEBUG) Log.d(LOG_TAG, "ignore this notification, isAirmodeNeed && airmodeStatus");
             return false;
@@ -78,7 +89,7 @@ public class NotifyEngine {
         if (SettingUtil.isScreenOnAndUnlocked(service)) {
             if (DEBUG) Log.d(LOG_TAG, "ignore this notification, isScreenOnAndUnlocked");
             // more intelligent while screen stays on
-            if (containsPackage(sbn.getPackageName())) {
+            if (containsPackage(sbn.getPackageName()) && !shouldDisableBySchedule()) {
                 if (DEBUG) Log.d(LOG_TAG, "in mPackages, save last notification time");
                 lastNotificationTime = System.currentTimeMillis();
             }
@@ -120,11 +131,13 @@ public class NotifyEngine {
             if (DEBUG) Log.d(LOG_TAG, "you have removed a notification when screen on, so " +
                     "maybe all other notifications will be ignore, restore AOD");
             lastNotificationTime = 0L;
+            exitScheduleTime();
             return true;
         }
         if (service.getActiveNotifications().length == 0) {
             lastNotificationTime = 0L;
-            lastPendingNotification = null;
+            //lastPendingNotification = null;
+            exitScheduleTime();
             if (DEBUG) Log.d(LOG_TAG, "no notifications, restore AOD");
             return true;
         }
@@ -151,6 +164,8 @@ public class NotifyEngine {
 
     void enterScheduleTime(StatusBarNotification sbn) {
         if (DEBUG) Log.d(LOG_TAG, "enterScheduleTime");
+        if (sbn == null || !containsPackage(sbn.getPackageName()))
+            return;
         lastPendingNotification = sbn;
         if (!isTimeTickerReceiverRegisted) {
             isTimeTickerReceiverRegisted = true;
@@ -163,8 +178,10 @@ public class NotifyEngine {
     void exitScheduleTime() {
         if (DEBUG) Log.d(LOG_TAG, "exitScheduleTime");
         lastPendingNotification = null;
-        service.unregisterReceiver(timeTickerReceiver);
-        isTimeTickerReceiverRegisted = false;
+        if (isTimeTickerReceiverRegisted) {
+            service.unregisterReceiver(timeTickerReceiver);
+            isTimeTickerReceiverRegisted = false;
+        }
     }
 
     public List<String> getPackages() {
@@ -254,6 +271,13 @@ public class NotifyEngine {
         this.scheduleEndTime = scheduleEndTime;
     }
 
+    public boolean isLightScreenNeed() {
+        return isLightScreenNeed;
+    }
+
+    public void setLightScreenNeed(boolean lightScreenNeed) {
+        isLightScreenNeed = lightScreenNeed;
+    }
 
     private BroadcastReceiver timeTickerReceiver = new BroadcastReceiver() {
         @Override
@@ -264,9 +288,13 @@ public class NotifyEngine {
                 if (service.getActiveNotifications().length == 0) {
                     exitScheduleTime();
                 }
-                if (!r && lastPendingNotification != null) {
-                    if (DEBUG) Log.d(LOG_TAG, "re-post notification after schedule time");
-                    service.onNotificationPosted(lastPendingNotification);
+                if (!r) {
+                    if (DEBUG) Log.d(LOG_TAG, "going to re-post notification after " +
+                            "schedule time");
+                    if (lastPendingNotification != null) {
+                        service.onNotificationPosted(lastPendingNotification);
+                        if (DEBUG) Log.d(LOG_TAG, "re-posted");
+                    }
                     exitScheduleTime();
                 }
             }

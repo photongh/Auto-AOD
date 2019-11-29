@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.tjhost.autoaod"
         minSdkVersion 21
         targetSdkVersion 22
-        versionCode 11
-        versionName "0.9.7"
+        versionCode 12
+        versionName "0.9.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

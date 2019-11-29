@@ -3,4 +3,6 @@
     <color name="colorPrimary">#673AB7</color>
     <color name="colorPrimaryDark">#563499</color>
     <color name="colorAccent">#AF9F00</color>
+
+    <color name="app_list_item_bg_ripple">#aaa</color>
 </resources>

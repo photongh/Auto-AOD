@@ -31,7 +31,7 @@
         app:layout_constraintHorizontal_weight="1"
         android:layout_marginStart="16dp"
         android:singleLine="true"
-        android:textColor="@android:color/primary_text_light"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="16sp"
         android:text="Unknown"/>
 
@@ -44,7 +44,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="@+id/app_name"
         app:layout_constraintHorizontal_weight="1"
-        android:textColor="@android:color/secondary_text_light"
+        android:textColor="?android:attr/textColorSecondary"
         android:textSize="14sp"
         android:text="Unknown"/>
 

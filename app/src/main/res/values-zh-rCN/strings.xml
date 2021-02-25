@@ -13,6 +13,9 @@
     <string name="tips_no_write_settings_permission">检测到无法修改系统设置，请授予本软件修改系统设置权限</string>
     <string name="tips_already_aod">检测到熄屏提醒（AOD）已经设置为常亮，而本软件就是利用熄屏提醒来当作通知灯使用，
         所以本软件对你已经没什么作用。如果仍然需要使用本软件，请将熄屏提醒模式修改为点击来显示或在计划时间内显示</string>
+    <string name="tips_reboot">在OneUI 3.0和更高的系统中, 新增了一个特殊的限制，你必须在打开核心服务后，
+        重启一次手机，在重启后，APP才会正常工作，请手动重启！</string>
+    <string name="tips_reboot_title">请重启手机</string>
 
     <string name="main_switch_title">核心服务</string>
     <string name="main_switch_summary_running">核心服务正在运行</string>
@@ -29,8 +32,13 @@
 
     <string name="tool_settings_category_title">工具</string>
     <string name="tool_settings_light_screen_title">通知亮屏</string>
-    <string name="tool_settings_light_screen_summary">当所选择的应用有新的通知时，点亮屏幕。如果你在系统设置中启用了本应用
+    <string name="tool_settings_light_screen_summary_oneui_2">当所选择的应用有新的通知时，点亮屏幕。如果你在系统设置中启用了本应用
         的熄屏侧屏闪光，那么有新的消息时，侧屏闪光会亮起（侧屏闪光内容空白，永远不会修复）</string>
+    <string name="tool_settings_light_screen_summary_oneui_3">当所选择的应用有新的通知时，点亮屏幕</string>
+    <string name="tool_settings_edge_lighting_title">侧屏闪光</string>
+    <string name="tool_settings_edge_lighting_summary">在Oneui3.0中, 侧屏闪光只能工作在简洁通知模式中, 这并不是很完美.
+        此选项可以在详细通知模式中启用侧屏闪光，就像Oneui2.5中那样。为了使用此功能，必须要去系统设置——通知，先选择简洁模式，
+        然后选择所有app，最后再将模式改回为详细模式即可。如果不起作用，请关闭核心服务后再重试一次</string>
 
     <string name="app_select_label">选择应用程序</string>
     <string name="app_select_menu_select_all">全选</string>

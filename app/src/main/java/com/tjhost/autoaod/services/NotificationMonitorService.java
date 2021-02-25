@@ -1,7 +1,7 @@
 package com.tjhost.autoaod.services;
 
 /*
- * Copyright (C) 2019-2020 "TangJian"
+ * Copyright (C) 2019-2022 "TangJian"
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ public class NotificationMonitorService extends NotificationListenerService {
     public static boolean DEBUG = Constants.DEBUG;
     private static final String LOG_TAG = "AutoAODService";
     public static NotificationMonitorService INSTANCE;
-    private int originalAodMode, originalAodTapMode, originalAodStartTime, originalAodEndTime;
+    private int originalAodMode, originalAodTapMode, originalAodStartTime, originalAodEndTime, originEdgeLightingMode;
     private LiveData<Boolean> serviceEnableLd;
     private List<String> mPackages;
     private boolean isAirmodeNeed; // ui setting switch value
@@ -65,6 +65,7 @@ public class NotificationMonitorService extends NotificationListenerService {
     private int scheduleStartTime; // schedule start time
     private int scheduleEndTime; // schedule end time
     private boolean isLightScreenNeed; // light screen on
+    private boolean isEdgeLightingNeed; // edge lighting on
     private NotifyEngine mEngine;
 
     @Override
@@ -241,6 +242,22 @@ public class NotificationMonitorService extends NotificationListenerService {
         repo.loadEnableLightScreenState();
     }
 
+    public void refreshEdgeLightingConfig() {
+        SettingRepo repo = DataFactory.getSettingRepo(this.getApplication());
+        // lambda is invalid here because we need the inner class pointer "this"
+        repo.getEnableEdgeLightingState().observeForever(new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (DEBUG) Log.d(LOG_TAG, "getEnableEdgeLightingState");
+                isEdgeLightingNeed = aBoolean;
+                if (DEBUG) Log.d(LOG_TAG, "now isEdgeLightingNeed = " + isEdgeLightingNeed);
+                if (mEngine != null) mEngine.setEdgeLightingNeed(isEdgeLightingNeed);
+                repo.getEnableEdgeLightingState().removeObserver(this);
+            }
+        });
+        repo.loadEnableEdgeLightingState();
+    }
+
     private void init() {
         if (MainFragment.mainViewModel != null)
             MainFragment.mainViewModel.setServiceRunningState(true);
@@ -248,15 +265,18 @@ public class NotificationMonitorService extends NotificationListenerService {
         originalAodTapMode = SettingUtil.getAodTapMode(this);
         originalAodStartTime = SettingUtil.getAodStartTime(this);
         originalAodEndTime = SettingUtil.getAodEndTime(this);
+        originEdgeLightingMode = SettingUtil.getEdgeLightingMode(this);
         //enableForgroundService(this);
         if (DEBUG) Log.d(LOG_TAG, "init originalAodTapMode = " + originalAodTapMode);
         if (DEBUG) Log.d(LOG_TAG, "init originalAodMode = " + originalAodMode);
         if (DEBUG) Log.d(LOG_TAG, "init originalAodStartTime = " + originalAodStartTime);
         if (DEBUG) Log.d(LOG_TAG, "init originalAodEndTime = " + originalAodEndTime);
+        if (DEBUG) Log.d(LOG_TAG, "init originEdgeLightingMode = " + originEdgeLightingMode);
     }
 
     private void release() {
         restoreAodMode();
+        restoreEdgeLightingMode();
         if (MainFragment.mainViewModel != null)
             MainFragment.mainViewModel.setServiceRunningState(false);
         stopMonitorConfigServiceState();
@@ -274,6 +294,14 @@ public class NotificationMonitorService extends NotificationListenerService {
             boolean r = SettingUtil.changeAodMode(this, originalAodTapMode,
                     originalAodMode, originalAodStartTime, originalAodEndTime);
             if (DEBUG) Log.d(LOG_TAG, "change aod mode to original success ? " + r);
+        }
+    }
+
+    private void restoreEdgeLightingMode() {
+        if (DEBUG) Log.d(LOG_TAG, "restoreAodMode originEdgeLightingMode = " + originEdgeLightingMode);
+        if (originEdgeLightingMode != SettingUtil.getEdgeLightingMode(this)) {
+            boolean r = SettingUtil.enableEdgeLighting(this, originEdgeLightingMode == 1);
+            if (DEBUG) Log.d(LOG_TAG, "change edge lighting mode to original success ? " + r);
         }
     }
 
@@ -343,6 +371,7 @@ public class NotificationMonitorService extends NotificationListenerService {
             refreshScheduleModeConfig();
             refreshScheduleTimeConfig();
             refreshLightScreenConfig();
+            refreshEdgeLightingConfig();
             registReceiver();
             return;
         }

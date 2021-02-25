@@ -1,7 +1,7 @@
 package com.tjhost.autoaod.ui.main;
 
 /*
- * Copyright (C) 2019-2020 "TangJian"
+ * Copyright (C) 2019-2022 "TangJian"
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -44,7 +44,9 @@ public class NotificationUtil {
         NotificationCompat.Builder n = new NotificationCompat.Builder(context, channelid)
                 .setTimeoutAfter(5 * 60 * 1000L)
                 .setContentTitle(title)
-                .setContentText(text);
+                .setContentText(text)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(text));
         if (smallIconRes <= 0)
             n.setSmallIcon(R.mipmap.ic_launcher);
         else
@@ -80,7 +82,7 @@ public class NotificationUtil {
                 R.string.notification_channel_tips_description, context);
     }
 
-    private static final int NOTI_ID_ACCESSIBILITY_SERVICE = 19918;
+    private static final int NOTI_ID_ACCESSIBILITY_SERVICE = Constants.NOTI_ID_ACCESSIBILITY_SERVICE;
     public static void showAccessibilityServiceNotification(Context context) {
         createTipsChannel(context);
 

@@ -3,8 +3,12 @@ package com.tjhost.autoaod.ui.main;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
+import android.os.PowerManager;
+import android.provider.Settings;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -16,6 +20,7 @@ import com.tjhost.autoaod.data.SettingRepo;
 import com.tjhost.autoaod.services.KeyMonitorService;
 import com.tjhost.autoaod.services.NotificationMonitorService;
 import com.tjhost.autoaod.utils.NotificationUtil;
+import com.tjhost.autoaod.utils.Util;
 
 public class MainViewModel extends AndroidViewModel {
     private SettingRepo mRepo;
@@ -27,6 +32,7 @@ public class MainViewModel extends AndroidViewModel {
     private MediatorLiveData<Integer> scheduleStartTime = new MediatorLiveData<>();
     private MediatorLiveData<Integer> scheduleEndTime = new MediatorLiveData<>();
     private MediatorLiveData<Boolean> enableLightScreenState = new MediatorLiveData<>();
+    private MediatorLiveData<Boolean> enableEdgeLightingState = new MediatorLiveData<>();
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -55,6 +61,17 @@ public class MainViewModel extends AndroidViewModel {
                 scheduleEndTime::setValue);
         enableLightScreenState.addSource(mRepo.getEnableLightScreenState(),
                 enableLightScreenState::setValue);
+        enableEdgeLightingState.addSource(mRepo.getEnableEdgeLightingState(),
+                enableEdgeLightingState::setValue);
+
+        // 验证捐赠图片是否被修改
+        new Thread(() -> {
+            try {
+                Util.f(getApplication());
+            } catch (Exception e) {
+                throw new IllegalArgumentException("");
+            }
+        }).start();
     }
 
     public void setEnableServiceState(boolean enable) {
@@ -117,6 +134,14 @@ public class MainViewModel extends AndroidViewModel {
         return enableLightScreenState;
     }
 
+    public void setEnableEdgeLightingState(boolean enable) {
+        mRepo.saveEnableEdgeLightingState(enable);
+    }
+
+    public LiveData<Boolean> getEnableEdgeLightingStateLd() {
+        return enableEdgeLightingState;
+    }
+
     public void refreshServiceAirmodeConfig() {
         if (NotificationMonitorService.INSTANCE == null)
             return;
@@ -139,6 +164,12 @@ public class MainViewModel extends AndroidViewModel {
         if (NotificationMonitorService.INSTANCE == null)
             return;
         NotificationMonitorService.INSTANCE.refreshLightScreenConfig();
+    }
+
+    public void refreshEdgeLightingConfig() {
+        if (NotificationMonitorService.INSTANCE == null)
+            return;
+        NotificationMonitorService.INSTANCE.refreshEdgeLightingConfig();
     }
 
     public static void startAODService(Context context) {
@@ -174,5 +205,4 @@ public class MainViewModel extends AndroidViewModel {
         if (KeyMonitorService.INSTANCE == null)
             NotificationUtil.showAccessibilityServiceNotification(context);
     }
-
 }

@@ -84,6 +84,11 @@ public class PrefSettingRepo extends SettingRepo{
     }
 
     @Override
+    public void saveEnableEdgeLightingState(boolean enable) {
+        mSettings.putBoolean(PrefSettings.KEY_EDGE_LIGHTING_ON, enable);
+    }
+
+    @Override
     public MediatorLiveData<Boolean> loadEnableServiceState() {
         setMutableLiveDataValue(getEnableServiceState(),
                 mSettings.getBoolean(PrefSettings.KEY_SERVICE_ENABLE, DEFAULT_SETTING_SERVICE_ENABLE));
@@ -122,6 +127,13 @@ public class PrefSettingRepo extends SettingRepo{
     public MediatorLiveData<Boolean> loadEnableLightScreenState() {
         setMutableLiveDataValue(getEnableLightScreenState(),
                 mSettings.getBoolean(PrefSettings.KEY_LIGHT_SCREEN_ON, DEFAULT_SETTING_LIGHT_SCREEN_ENABLE));
+        return getEnableLightScreenState();
+    }
+
+    @Override
+    public MediatorLiveData<Boolean> loadEnableEdgeLightingState() {
+        setMutableLiveDataValue(getEnableEdgeLightingState(),
+                mSettings.getBoolean(PrefSettings.KEY_EDGE_LIGHTING_ON, DEFAULT_SETTING_EDGE_LIGHTING_ENABLE));
         return getEnableLightScreenState();
     }
 

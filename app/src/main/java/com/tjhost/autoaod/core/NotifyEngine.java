@@ -31,6 +31,7 @@ public class NotifyEngine {
     private int screenTimeoutTime; // screen timeout time in system settings, ms
     private long lastNotificationTime; // the last notification from applications you selected while screen stays on
     private boolean isLightScreenNeed; // light screen on
+    private boolean isEdgeLightingNeed; // edge lighting on
     private StatusBarNotification lastPendingNotification; // last notification in schedule time
     private boolean isTimeTickerReceiverRegisted;
 
@@ -146,10 +147,15 @@ public class NotifyEngine {
     }
 
     public void onScreenOn() {
-
+        if (isEdgeLightingNeed) {
+            SettingUtil.enableEdgeLighting(service, false);
+        }
     }
 
     public void onScreenOff() {
+        if (isEdgeLightingNeed) {
+            SettingUtil.enableEdgeLighting(service, true);
+        }
         if ((System.currentTimeMillis() - lastNotificationTime) < screenTimeoutTime) {
             if (DEBUG) Log.d(LOG_TAG, "this notification may be missed by you, enable AOD");
             if (!shoouldDisableByAccessibilityService()) {
@@ -277,6 +283,14 @@ public class NotifyEngine {
 
     public void setLightScreenNeed(boolean lightScreenNeed) {
         isLightScreenNeed = lightScreenNeed;
+    }
+
+    public boolean isEdgeLightingNeed() {
+        return isEdgeLightingNeed;
+    }
+
+    public void setEdgeLightingNeed(boolean edgeLightingNeed) {
+        isEdgeLightingNeed = edgeLightingNeed;
     }
 
     private BroadcastReceiver timeTickerReceiver = new BroadcastReceiver() {

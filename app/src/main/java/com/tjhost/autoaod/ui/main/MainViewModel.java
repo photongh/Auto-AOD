@@ -3,8 +3,12 @@ package com.tjhost.autoaod.ui.main;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
+import android.os.PowerManager;
+import android.provider.Settings;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -27,6 +31,7 @@ public class MainViewModel extends AndroidViewModel {
     private MediatorLiveData<Integer> scheduleStartTime = new MediatorLiveData<>();
     private MediatorLiveData<Integer> scheduleEndTime = new MediatorLiveData<>();
     private MediatorLiveData<Boolean> enableLightScreenState = new MediatorLiveData<>();
+    private MediatorLiveData<Boolean> enableEdgeLightingState = new MediatorLiveData<>();
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -55,6 +60,8 @@ public class MainViewModel extends AndroidViewModel {
                 scheduleEndTime::setValue);
         enableLightScreenState.addSource(mRepo.getEnableLightScreenState(),
                 enableLightScreenState::setValue);
+        enableEdgeLightingState.addSource(mRepo.getEnableEdgeLightingState(),
+                enableEdgeLightingState::setValue);
     }
 
     public void setEnableServiceState(boolean enable) {
@@ -117,6 +124,14 @@ public class MainViewModel extends AndroidViewModel {
         return enableLightScreenState;
     }
 
+    public void setEnableEdgeLightingState(boolean enable) {
+        mRepo.saveEnableEdgeLightingState(enable);
+    }
+
+    public LiveData<Boolean> getEnableEdgeLightingStateLd() {
+        return enableEdgeLightingState;
+    }
+
     public void refreshServiceAirmodeConfig() {
         if (NotificationMonitorService.INSTANCE == null)
             return;
@@ -139,6 +154,12 @@ public class MainViewModel extends AndroidViewModel {
         if (NotificationMonitorService.INSTANCE == null)
             return;
         NotificationMonitorService.INSTANCE.refreshLightScreenConfig();
+    }
+
+    public void refreshEdgeLightingConfig() {
+        if (NotificationMonitorService.INSTANCE == null)
+            return;
+        NotificationMonitorService.INSTANCE.refreshEdgeLightingConfig();
     }
 
     public static void startAODService(Context context) {
@@ -174,5 +195,4 @@ public class MainViewModel extends AndroidViewModel {
         if (KeyMonitorService.INSTANCE == null)
             NotificationUtil.showAccessibilityServiceNotification(context);
     }
-
 }

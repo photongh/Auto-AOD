@@ -80,6 +80,16 @@ public class SettingUtil {
         return r;
     }
 
+    public static boolean enableEdgeLighting(Context context, boolean enable) {
+        return Settings.System.putInt(context.getContentResolver(),
+                "edge_lighting", enable ? 1 : 0);
+    }
+
+    public static int getEdgeLightingMode(Context context) {
+        return Settings.System.getInt(context.getContentResolver(),
+                "edge_lighting", 0);
+    }
+
     public static int getAodMode(Context context) {
         return Settings.System.getInt(context.getContentResolver(),
                 "aod_mode", 0);

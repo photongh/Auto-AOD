@@ -1,10 +1,15 @@
 package com.tjhost.autoaod.ui.main;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
@@ -23,9 +28,11 @@ import androidx.preference.SwitchPreferenceCompat;
 import com.tjhost.autoaod.Constants;
 import com.tjhost.autoaod.R;
 import com.tjhost.autoaod.ui.apps.AppsSelectActivity;
+import com.tjhost.autoaod.utils.NotificationUtil;
 import com.tjhost.autoaod.utils.SettingUtil;
 
 import static com.tjhost.autoaod.data.PrefSettings.KEY_AIRMODE_ENABLE;
+import static com.tjhost.autoaod.data.PrefSettings.KEY_EDGE_LIGHTING_ON;
 import static com.tjhost.autoaod.data.PrefSettings.KEY_LIGHT_SCREEN_ON;
 import static com.tjhost.autoaod.data.PrefSettings.KEY_SERVICE_ENABLE;
 import static com.tjhost.autoaod.data.PrefSettings.KEY_TIME_SCHEDULE_ENABLE;
@@ -75,6 +82,15 @@ public class MainFragment extends PreferenceFragmentCompat {
             if (aBoolean) {
                 MainViewModel.startAODService(requireActivity());
                 MainViewModel.checkAndNotifyKeyService(requireActivity());
+                // higher than oneui 3.0 will be requested to reboot
+                if (Build.VERSION.SDK_INT == 30 && "samsung".equals(Build.BRAND)) {
+//                    TipsDialog.show(requireActivity(), 0,
+//                            R.string.tips_reboot);
+                    NotificationUtil.createTipsChannel(requireContext());
+                    NotificationUtil.showSimpleNotification(requireContext(), Constants.NOTIFICATION_CHANNEL_ID_TIPS,
+                            R.string.tips_reboot_title, R.string.tips_reboot, -1, Constants.NOTI_ID_TIPS_REBOOT,
+                            null);
+                }
             } else {
                 MainViewModel.stopAODService(requireActivity());
                 MainViewModel.stopKeyService();
@@ -99,6 +115,10 @@ public class MainFragment extends PreferenceFragmentCompat {
         mainViewModel.getEnableLightScreenStateLd().observe(this, aBoolean -> {
             if (DEBUG) Log.d("MainFragment", "getEnableLightScreenStateLd change, aBoolean = " + aBoolean);
             mainViewModel.refreshLightScreenConfig();
+        });
+        mainViewModel.getEnableEdgeLightingStateLd().observe(this, aBoolean -> {
+            if (DEBUG) Log.d("MainFragment", "getEnableEdgeLightingStateLd change, aBoolean = " + aBoolean);
+            mainViewModel.refreshEdgeLightingConfig();
         });
         mainViewModel.getServiceRunningStateLd().observe(this, aBoolean -> {
             if (DEBUG) Log.d("MainFragment", "getServiceRunningStateLd change, aBoolean = " + aBoolean);
@@ -139,6 +159,14 @@ public class MainFragment extends PreferenceFragmentCompat {
         super.onDisplayPreferenceDialog(preference);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0) { // ignore battery optimization
+            // nothing
+        }
+    }
+
     private void setUi() {
         SwitchPreferenceCompat pref = getPreferenceScreen().findPreference(KEY_SERVICE_ENABLE);
         assert pref != null;
@@ -159,6 +187,10 @@ public class MainFragment extends PreferenceFragmentCompat {
             return;
         }
 
+        if (!hasIgnoreBatteryOptimizationPermission()) {
+            requestIgnoreBatteryOptimization();
+        }
+
         pref.setEnabled(true);
     }
 
@@ -177,7 +209,7 @@ public class MainFragment extends PreferenceFragmentCompat {
             // no action
         }
         final String url = "https://github.com/photongh/Auto-AOD";
-        String details = "Copyright © 2019-2020 TangJian\n"
+        String details = "Copyright © 2019-2022 TangJian\n"
                 + "Mail: 543708542@qq.com\n"
                 + "Source: " + url;
 
@@ -210,8 +242,17 @@ public class MainFragment extends PreferenceFragmentCompat {
         });
 
         PreferenceCategory tools = createCategory(root, R.string.tool_settings_category_title, 0, "tool");
-        createSwitchPref(tools, R.string.tool_settings_light_screen_title, R.string.tool_settings_light_screen_summary,
-                KEY_LIGHT_SCREEN_ON, Constants.DEFAULT_SETTING_LIGHT_SCREEN_ON, true);
+        if (Build.VERSION.SDK_INT == 30 && "samsung".equals(Build.BRAND)) {
+            // oneui 3.0 base on android 11
+            createSwitchPref(tools, R.string.tool_settings_light_screen_title, R.string.tool_settings_light_screen_summary_oneui_3,
+                    KEY_LIGHT_SCREEN_ON, Constants.DEFAULT_SETTING_LIGHT_SCREEN_ON, true);
+            createSwitchPref(tools, R.string.tool_settings_edge_lighting_title, R.string.tool_settings_edge_lighting_summary,
+                    KEY_EDGE_LIGHTING_ON, Constants.DEFAULT_SETTING_EDGE_LIGHT_ON,
+                    SettingUtil.getEdgeLightingMode(requireContext()) == 0);
+        } else {
+            createSwitchPref(tools, R.string.tool_settings_light_screen_title, R.string.tool_settings_light_screen_summary_oneui_2,
+                    KEY_LIGHT_SCREEN_ON, Constants.DEFAULT_SETTING_LIGHT_SCREEN_ON, true);
+        }
 
         return root;
     }
@@ -221,6 +262,24 @@ public class MainFragment extends PreferenceFragmentCompat {
             new OpenNotificationPermissionDialog().show(getFragmentManager(),
                     OpenNotificationPermissionDialog.DIALOG_TAG);
         }
+    }
+
+    private void requestIgnoreBatteryOptimization() {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
+            return;
+        }
+        Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+        intent.setData(Uri.parse("package:"+requireActivity().getPackageName()));
+        startActivityForResult(intent, 0);
+    }
+
+    private boolean hasIgnoreBatteryOptimizationPermission() {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
+            return false;
+        }
+        PowerManager powerManager = (PowerManager) requireActivity().
+                getSystemService(Context.POWER_SERVICE);
+        return powerManager.isIgnoringBatteryOptimizations(requireActivity().getPackageName());
     }
 
     @SuppressWarnings("ConstantConditions")

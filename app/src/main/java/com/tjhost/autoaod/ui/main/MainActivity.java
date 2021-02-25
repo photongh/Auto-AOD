@@ -1,6 +1,9 @@
 package com.tjhost.autoaod.ui.main;
 
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -22,7 +25,7 @@ public class MainActivity extends BaseAppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, 0, 0, "Debug");
+        //menu.add(0, 0, 0, "Debug");
         return super.onCreateOptionsMenu(menu);
     }
 

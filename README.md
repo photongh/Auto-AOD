@@ -3,7 +3,7 @@
 <img alt="screenshot1" src="./screenshot/screenshot_20190603142307.jpg" width="30%">
 <img alt="screenshot2" src="./screenshot/screenshot_20190603142226.jpg" width="30%">
 
-Auto AOD is developed for Samsung s10/s10+/s10e.
+Auto AOD is developed for Samsung s10 series and other Samsung devices.
 
 As the notification LED is absent on Samsung S10 and Samsung company may not update the software solution, I 
 create this app to take advantage of the Samsung's AOD(Always On Display) feature to show me the new un-read 
@@ -16,12 +16,13 @@ This app is desired to save more battery, so it has any permissions/traces and u
 (For Chinese)To ensure this app can be running forever, Please enable the "Auto Running" of this app
  in system settings.
 
-This is the source for the Auto-AOD, APK Download: [go](https://github.com/photongh/Auto-AOD/releases)
+This is the source for the Auto-AOD, APK Download: [Github](https://github.com/photongh/Auto-AOD/releases) or
+[Coolapk](https://www.coolapk.com/apk/com.tjhost.autoaod)
 
 License
 ---
 ```
-    Copyright (C) 2019-2020 "TangJian"
+    Copyright (C) 2019-2022 "TangJian"
     
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
